@@ -2,20 +2,309 @@
 import Layout from '../layouts/Layout.astro';
 import ContextAlert from '../components/ContextAlert.astro';
 import Markdown from '../components/Markdown.astro';
+import uuid from 'uuid-random';
+import { createStorefrontApiClient } from '@shopify/storefront-api-client';
+import jsonwebtoken from 'jsonwebtoken';
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+export const prerender = false;
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+const SHP_ARCHIVE_TOKEN = '6b98671c3560340427f4a1baeaf7ef69';
 ---
 
-<Layout title="Welcome to Astro.">
-    <ContextAlert class="mb-4" />
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="text-lg mb-10" />
-    <p class="mb-8">
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg btn-primary sm:btn-wide">Read the Docs</a>
-    </p>
+<Layout title="Headroom">
+    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
+        <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
+            <script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
+            <style>
+                #jaas-container {
+                    height: 100%;
+                }
+            </style>
+            <script type="text/javascript">
+                window.addEventListener('alpine:init', () => {
+                    Alpine.store('products');
+                    Alpine.store('cart');
+                });
+                window.addEventListener('load', () => {
+                    const options = {
+                        XstartVideoMuted: 5,
+                        configOverwrite: { toolbarButtons: ['hangup', 'microphone', 'camera'] }
+                    };
+                    const api = new JitsiMeetExternalAPI('8x8.vc', {
+                        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/WelcomeToTheStore',
+                        parentNode: document.querySelector('#jaas-container'),
+                        XconfigOverwrite: { toolbarButtons: ['microphone', 'camera', 'chat'] },
+                        jwt: 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtYzk0YTNmYjJiZjg2NGE4ODk5NTdiOTFiODVmZDY1NzQvNDc2OTgzLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3MjYzMzI5NDcsImV4cCI6MTcyNjM0MDE0NywibmJmIjoxNzI2MzMyOTQyLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtYzk0YTNmYjJiZjg2NGE4ODk5NTdiOTFiODVmZDY1NzQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOmZhbHNlLCJzaXAtb3V0Ym91bmQtY2FsbCI6ZmFsc2UsInRyYW5zY3JpcHRpb24iOnRydWUsInJlY29yZGluZyI6dHJ1ZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJtYXJjbyIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDQ4OTQyOTY1Njg0MjI1MDI5OTYiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im1hcmNvQG1pbWVjb20ubmV0In19LCJyb29tIjoiKiJ9.wMcgcx_C-5ZCaRoOUV1gu1DA7ZeoAeJXP_l-6GIqa8r5pHAI3gpWfqs93pewR62bD1Yp6VfY-QmQix_3Fewu4tCarlHj9_jzo85MlKjNO_hMmFjiXsL-il_6-rsKeZnpmCnWK0n6QAlTTqMapwcMHp1QWGHnikmqMIb6Zbu6A45rqxyeg4-PPWEAMEZ5QggKX_IzRzPl01Rt_qzMJtkiGOeE9dNGtsBkMZV4DPhhzPMKkAOr5fsyasplvYjefdiu1eSM5E8OKWzOPbynK4HUcPQDFRf5tiK7fAVlc7R0qHNx2HXId8EOgTjrNz8GDad1mTyPTnVY9Dcx6wuMRDbK6Q'
+                    });
+
+                    window.jitsi = api;
+
+                    Alpine.store('products', []);
+                    Alpine.store('cart', {});
+
+                    window.handleMessage = async (e) => {
+                        console.log('X: incoming:', e.message);
+                        const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+                        const res = re.exec(e.message || e.subject);
+                        console.log('match:', res);
+                        if (res != null) {
+                            console.log('X:', res.groups.cmd);
+                            switch (res.groups.cmd) {
+                                case 'k':
+                                case 'kiosk':
+                                    var req = await fetch(`https://kioskkiosk.com/search/suggest.json?q=${res.groups.args}`);
+                                    var results = await req.json();
+                                    var productstub = results.resources.results.products[0];
+                                    if (null !== productstub) {
+                                        console.log('X: productstub:', productstub.title, productstub.id);
+
+                                        var req = await fetch(`https://kioskkiosk.com/products/${productstub.handle}.js`);
+                                        var product = await req.json();
+                                        console.log('X: product:', product);
+                                        var index = Alpine.store('products').findIndex((e) => e.id == product.id);
+                                        if (index >= 0) Alpine.store('products').splice(index, 1);
+                                        product.thumbnail = product.featured_image.replace(/(\.w{3,4}\?)/, '_300\1/');
+                                        Alpine.store('products').unshift(product);
+                                    }
+                                    break;
+                                case 'a':
+                                    try {
+                                        var req = await fetch(`https://archive.kioskkiosk.com/search/suggest.json?q=${res.groups.args}`, { mode: 'no-cors' });
+                                        console.log('t', await req.text());
+
+                                        var results = await req.json();
+                                        var productstub = results.resources.results.products[0];
+                                        if (null !== productstub) {
+                                            console.log('X: productstub:', productstub.title, productstub.id);
+
+                                            var req = await fetch(`https://archive.kioskkiosk.com/products/${productstub.handle}.js`, { mode: 'no-cors' });
+                                            var product = await req.json();
+                                            console.log('X: product:', product);
+                                            var index = Alpine.store('products').findIndex((e) => e.id == product.id);
+                                            if (index >= 0) Alpine.store('products').splice(index, 1);
+                                            product.thumbnail = product.featured_image.replace(/(\.w{3,4}\?)/, '_300\1/');
+                                            Alpine.store('products').unshift(product);
+                                        }
+                                    } catch (e) {
+                                        console.log('X: error:', e);
+                                    }
+                                    break;
+                            }
+                        }
+                    };
+
+                    jitsi.addListener('incomingMessage', window.handleMessage);
+                    jitsi.addListener('outgoingMessage', window.handleMessage);
+                    jitsi.addListener('subjectChange', window.handleMessage);
+
+                    window.addToCart = async (variant_id) => {
+                        var res = await fetch('/cart/add.js', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                items: [
+                                    {
+                                        id: variant_id,
+                                        quantity: 1
+                                    }
+                                ]
+                            })
+                        });
+                        var res = await fetch('/cart.js', {
+                            method: 'GET'
+                        });
+                        Alpine.store('cart', await res.json());
+                        console.log(Alpine.store('cart'));
+                        return true;
+                    };
+
+                    window.shopUrl = '{{ request.origin }}';
+                    window.routes = {
+                        cart_add_url: '{{ routes.cart_add_url }}',
+                        cart_change_url: '{{ routes.cart_change_url }}',
+                        cart_update_url: '{{ routes.cart_update_url }}',
+                        cart_url: '{{ routes.cart_url }}',
+                        predictive_search_url: '{{ routes.predictive_search_url }}'
+                    };
+
+                    async function fetchWithTimeout(resource, options = {}) {
+                        const { timeout = 8000 } = options;
+
+                        const controller = new AbortController();
+                        const id = setTimeout(() => controller.abort(), timeout);
+
+                        const response = await fetch(resource, {
+                            ...options,
+                            signal: controller.signal
+                        });
+
+                        clearTimeout(id);
+                        return response;
+                    }
+                });
+            </script>
+            <div id="jaas-container"></div>
+        </main>
+
+        <aside class="w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
+            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]">
+                <dialog
+                    x-if="null!=activeProduct"
+                    id="productView"
+                    x-ref="productView"
+                    @key.escape="activeProduct=null"
+                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-[60vw] left-4 top-4 p-4 bg-opacity-80 border border-black"
+                >
+                    <div class="columns-3">
+                        <img
+                            height="200"
+                            width="200"
+                            :src="activeProduct.featured_image"
+                            :alt="activeProduct.title"
+                            :title="activeProduct.title"
+                            class="border border-black object-contain cursor-pointer xw-[20vw] aspect-square"
+                        />
+                        <h1 x-text="activeProduct.title" class="sans font-bold uppercase py-2"></h1>
+                        <div x-html="activeProduct.description"></div>
+
+                        <div class="p-1">
+                            <template x-if="activeProduct.variants.length > 0" x-for="variant in activeProduct.variants" :key="variant.id">
+                                <button
+                                    x-if="null!=variant"
+                                    x-data="{adding:false,added:null}"
+                                    @click.prevent="adding=true; added=await addToCart(variant.id); adding=false; console.log(variant);"
+                                    onclick="return false;"
+                                    :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
+                                    class="appearance-none font-bold text-sm bold p-1 m-2 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
+                                >
+                                    <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
+                                        x-text="variant.title!='Default Title'? variant.title : 'It'"></span>
+                                </button>
+                            </template>
+                            <form method="dialog">
+                                <button type="submit" class="appearance-none font-bold p-1 m-1 border border-red bg-white bg-opacity-50 focus:outline-none">
+                                    close
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+                <template x-for="p in $store.products">
+                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100">
+                        <img
+                            height="200"
+                            width="200"
+                            :src="p.thumbnail"
+                            :alt="p.title"
+                            :title="p.title"
+                            class="border border-black w-full cursor-pointer aspect-square bg-yellow-200"
+                            @click="activeProduct=p; $refs.productView.showModal()"
+                            loading="lazy"
+                        />
+                    </div>
+                </template>
+            </section>
+            <section x-data="{}" class="bg-green-300 h-40 border-t border-black place-content-center grid">
+                <span class="font-bold">A D M I N</span>
+                {jsonwebtoken}
+            </section>
+        </aside>
+    </div>
 </Layout>
+
+<script>
+    import { createStorefrontApiClient } from '@shopify/storefront-api-client';
+
+    const SHP_ARCHIVE_TOKEN = '6b98671c3560340427f4a1baeaf7ef69';
+    const SHP_SHOP_TOKEN = '7766fe447c722c1317e528bdc92f1f2d';
+
+    const archive_client = createStorefrontApiClient({
+        storeDomain: 'kioskarchive.myshopify.com',
+        apiVersion: '2023-10',
+        publicAccessToken: SHP_ARCHIVE_TOKEN
+    });
+    const shop_client = createStorefrontApiClient({
+        storeDomain: 'kioskarchive.myshopify.com',
+        apiVersion: '2023-10',
+        publicAccessToken: SHP_ARCHIVE_TOKEN
+    });
+
+    const productQuery = `
+  query ProductQuery($handle: String) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      description
+      featuredImage {
+        url(transform: { maxWidth: 1000 })
+        altText
+      }
+      images(first: 3) {
+        edges {
+                    node {
+                        originalSrc
+                        url(transform: { maxWidth: 1000 })
+                        altText
+                    }
+                }
+            }
+            variants(first: 5) {
+                edges {
+                    node {
+                        id
+                        title
+                        availableForSale
+                        priceV2 {
+                            amount
+                            currencyCode
+                        }
+                    }
+                }
+      }
+    }
+  }
+`;
+    const productSearchQuery = `
+query searchProducts($query: String!, $first: Int) {
+  search(query: $query, first: $first, types: PRODUCT) {
+    edges {
+      node {
+        ... on Product {
+      id
+      title
+      handle
+      descriptionHtml
+      featuredImage {
+        url(transform: { maxWidth: 300 })
+        altText
+      }
+                }
+      }
+    }
+  }
+}`;
+
+    var { data, errors, extensions } = await shop_client.request(productQuery, {
+        variables: {
+            handle: 'danish-dish-brush'
+        }
+    });
+    console.log(data?.product?.featuredImage.url);
+
+    var { data, errors, extensions } = await archive_client.request(productSearchQuery, {
+        variables: {
+            query: 'sweden pen',
+            first: 5
+        }
+    });
+    console.log(
+        data?.search?.edges
+            .map((p) => {
+                return p.node.title;
+            })
+            .join(', ')
+    );
+</script>
