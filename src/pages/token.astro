@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContextAlert from '../components/ContextAlert.astro';
+import Markdown from '../components/Markdown.astro';
+import uuid from 'uuid-random';
+import { createStorefrontApiClient } from '@shopify/storefront-api-client';
+import jsonwebtoken from 'jsonwebtoken';
+
+export const prerender = false;
+
+const SHP_ARCHIVE_TOKEN = '6b98671c3560340427f4a1baeaf7ef69';
+
+const generate = (privateKey, { id, name, email, avatar, appId, kid }) => {
+    const now = new Date();
+    const jwt = jsonwebtoken.sign(
+        {
+            aud: 'jitsi',
+            context: {
+                user: {
+                    id,
+                    name,
+                    avatar,
+                    email: email,
+                    moderator: 'true'
+                },
+                features: {
+                    livestreaming: 'true',
+                    recording: 'true',
+                    transcription: 'true',
+                    'outbound-call': 'true'
+                }
+            },
+            iss: 'chat',
+            room: '*',
+            sub: appId,
+            exp: Math.round(now.setHours(now.getHours() + 3) / 1000),
+            nbf: Math.round(new Date().getTime() / 1000) - 10
+        },
+        privateKey,
+        { algorithm: 'RS256', header: { kid } }
+    );
+    return jwt;
+};
+
+const token = generate(
+    `-----BEGIN PRIVATE KEY-----${process.env.JITSI_API_SECRET.replace(/-----[\w\s]+-----/g, '')
+        .split(/\s/)
+        .join('\n')}-----END PRIVATE KEY-----`,
+    {
+        id: uuid(),
+        name: 'KIOSK:Marco',
+        email: 'marco@mimecom.net',
+        avatar: 'my avatar url',
+        appId: process.env.JITSI_API_APPID, // Your AppID ( previously tenant )
+        kid: process.env.JITSI_API_KEY
+    }
+);
+---
+
+<Layout title="Token">
+    <pre>{token}</pre>
+    <pre>{process.env.JITSI_API_SECRET}</pre>
+    <pre>{`-----BEGIN PRIVATE KEY-----${process.env.JITSI_API_SECRET.replace(/-----[\w\s]+-----/g,'').split(/\s/).join('\n')}-----END PRIVATE KEY-----`}</pre>
+</Layout>
