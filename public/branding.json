@@ -1,0 +1,25 @@
+{
+    "backgroundColor": "#fff",
+    "customTheme": {
+        "palette": {
+            "ui01": "orange !important",
+            "ui02": "maroon",
+            "surface02": "darkgreen",
+            "ui03": "violet",
+            "ui04": "magenta",
+            "ui05": "blueviolet",
+            "action01": "green",
+            "action01Hover": "lightgreen",
+            "disabled01": "beige",
+            "success02": "cadetblue",
+            "action02Hover": "aliceblue"
+        },
+        "typography": {
+            "labelRegular": {
+                "fontSize": 18,
+                "lineHeight": 23,
+                "fontWeight": 300
+            }
+        }
+    }
+}
