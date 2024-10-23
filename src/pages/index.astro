@@ -97,8 +97,10 @@ const jitsi_jwt_token = generate(
                             ]
                         },
                         interfaceConfigOverwrite: {
-                            DISABLE_VIDEO_BACKGROUND: true,
-                            DEFAULT_BACKGROUND: '#a8c8f9'
+                            DISABLE_VIDEO_BACKGROUND: false,
+                            DEFAULT_BACKGROUND: '#a8c8f9',
+                            AUDIO_LEVEL_PRIMARY_COLOR: 'rgba(255,0,0,0.4)',
+                            AUDIO_LEVEL_SECONDARY_COLOR: 'rgba(0,0,255,0.2)'
                         },
 
                         jwt: jitsi_jwt_token
