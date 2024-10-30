@@ -7,9 +7,13 @@ import alpinejs from '@astrojs/alpinejs';
 
 // https://astro.build/config
 export default defineConfig({
-    integrations: [react(), tailwind({
-        applyBaseStyles: false
-    }), alpinejs()],
+    integrations: [
+        react(),
+        tailwind({
+            applyBaseStyles: false
+        }),
+        alpinejs({ entrypoint: '/src/astroentry.js' })
+    ],
     output: 'hybrid',
     adapter: netlify()
 });

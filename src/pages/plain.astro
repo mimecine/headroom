@@ -2,20 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import ShoppingCart from '../components/ShoppingCart.astro';
 import ShoppingCartButton from '../components/ShoppingCartButton.astro';
-const hey = 'hello';
+import Collection from '../components/Collection.astro';
 ---
 
 <Layout title="Plain w Component">
-    <div x-data class="font-mono text-xs"></div>
     <ShoppingCart />
-    <ShoppingCartButton>[- <span x-text="data.cartIsOpen?'close':'open'"></span> -]</ShoppingCartButton>
+    <ShoppingCartButton />
+    <div x-data class="font-mono xtext-xs">
+        <Collection handle="things" class="border border-current bg-pink-800 text-blue-300 w-1/2 p-4" />
+    </div>
 </Layout>
-<script>
-    import Alpine from 'alpinejs';
-    import Cart from '../assets/cart.js';
-    window.Cart = Cart;
-    let cartdata = Alpine.$data(document.querySelector('[x-ref="shoppingcart"]'));
-    cartdata.D.Cart = Cart;
-    cartdata.cost = Cart.cost;
-    cartdata.lines = Cart.lines;
-</script>

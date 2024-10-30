@@ -27,7 +27,7 @@ const { title } = Astro.props;
         <link rel="preload" as="font" type="font/woff2" href={interFont800} crossorigin />
         <slot name="head" />
     </head>
-    <body class="antialiased text-white bg-[#355C7D]" x-data="{data:{}}">
+    <body class="antialiased text-white bg-[#355C7D]" x-data>
         <div class="flex flex-col min-h-screen xpx-6 bg-grid-pattern xsm:px-12">
             <div class="flex flex-col w-full xmax-w-5xl mx-auto grow">
                 <main class="grow"><slot /></main>
@@ -36,92 +36,8 @@ const { title } = Astro.props;
     </body>
 </html>
 <script is:inline>
-    Cart = window.Cart || {};
-    function cart() {
-        return {
-            isOpen: false,
-            isLoading: false,
-            cartItems: [],
-            cartTotal: 0,
-            shopifyCart: null, // This would be an instance of your ShoppingCart class
-
-            async init() {
-                // Initialize your ShoppingCart class here
-                this.shopifyCart = Cart;
-                window.shopifyCart = this.shopifyCart;
-                //await this.fetchCart();
-            },
-
-            async fetchCart() {
-                this.isLoading = true;
-                try {
-                    await this.shopifyCart.fetchCart();
-                    this.cartItems = this.shopifyCart.lines; /*.map((edge) => ({
-                        id: edge.node.id,
-                        title: edge.node.merchandise.title,
-                        price: edge.node.merchandise.price.amount,
-                        quantity: edge.node.quantity
-                    }));*/
-                    this.cartTotal = cart.cost.totalAmount.amount;
-                } catch (error) {
-                    console.error('Error fetching cart:', error);
-                } finally {
-                    this.isLoading = false;
-                }
-            },
-
-            async addItem(variantId, quantity = 1) {
-                let res = await this.shopifyCart.addItem(variantId, quantity);
-                console.log(res);
-                await this.fetchCart();
-                return res;
-            },
-
-            async updateQuantity(itemId, newQuantity) {
-                let res = false;
-                if (newQuantity < 1) {
-                    res = await this.removeItem(itemId);
-                } else {
-                    res = await this.shopifyCart.updateCartItem(itemId, newQuantity);
-                    await this.fetchCart();
-                }
-                return res;
-            },
-
-            async removeItem(itemId) {
-                let res = await this.shopifyCart.removeFromCart(itemId);
-                await this.fetchCart();
-                return res;
-            },
-
-            toggleCart() {
-                this.isOpen = !this.isOpen;
-            },
-
-            closeCart() {
-                this.isOpen = false;
-            },
-
-            formatMoney(amount) {
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-            },
-
-            checkout() {
-                // Implement checkout logic here
-                window.location.href = this.shopifyCart.checkoutUrl;
-                console.log('Proceeding to checkout...');
-            }
-        };
-    }
-    window.cart = cart;
+    document.addEventListener('alpine:init', () => {});
 </script>
-
-<script>
-    import Cart from '../assets/cart.js';
-    window.Cart = Cart;
-    window.Cart.fetchCart();
-</script>
-
 <script>
     import { createStorefrontApiClient } from '@shopify/storefront-api-client';
     const gql = String.raw;
@@ -156,15 +72,15 @@ const { title } = Astro.props;
                                 url(transform: { maxWidth: 300 })
                                 altText
                             }
-                            images(first: 3) {
-                                edges {
-                                    node {
-                                        originalSrc
-                                        url(transform: { maxWidth: 300 })
-                                        altText
-                                    }
-                                }
-                            }
+                            # images(first: 3) {
+                            #     edges {
+                            #         node {
+                            #             originalSrc
+                            #             url(transform: { maxWidth: 300 })
+                            #             altText
+                            #         }
+                            #     }
+                            # }
                             variants(first: 5) {
                                 edges {
                                     node {
@@ -201,3 +117,8 @@ const { title } = Astro.props;
         return products;
     };
 </script>
+<style>
+    #jaas-container {
+        height: 100%;
+    }
+</style>

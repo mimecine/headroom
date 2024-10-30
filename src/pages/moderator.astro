@@ -62,16 +62,7 @@ const jitsi_jwt_token = generate(
     <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
         <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
             <script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
-            <style>
-                #jaas-container {
-                    height: 100%;
-                }
-            </style>
             <script define:vars={{ jitsi_jwt_token }}>
-                window.addEventListener('alpine:init', () => {
-                    Alpine.store('products', []);
-                    Alpine.store('cart', {});
-                });
                 window.addEventListener('load', () => {
                     const api = new JitsiMeetExternalAPI('8x8.vc', {
                         roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
@@ -79,6 +70,7 @@ const jitsi_jwt_token = generate(
                         dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
                         configOverwrite: {
                             apiLogLevels: ['error'],
+                            prejoinPageEnabled: false,
                             disabledNotifications: [
                                 'notify.chatMessages' // shown when receiving chat messages while the chat window is closed
                                 // 'notify.grantedTo' // shown when moderator rights were granted to a participant
@@ -100,6 +92,7 @@ const jitsi_jwt_token = generate(
                                     if (products.length > 0) {
                                         console.log('F::', products);
                                         Alpine.store('products').unshift(products.at(0));
+                                        // TODO: deduplicate list
                                     }
                             }
                         }
@@ -115,11 +108,11 @@ const jitsi_jwt_token = generate(
                     });
                 });
             </script>
-            <div id="jaas-container"></div>
+            <div id="jaas-container" class="h-full"></div>
         </main>
 
         <aside class="w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
-            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]">
+            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
                 <dialog
                     id="productView"
                     x-ref="productView"
@@ -139,7 +132,7 @@ const jitsi_jwt_token = generate(
                             <h1 x-text="activeProduct.title" class="sans font-bold uppercase py-2"></h1>
                             <div class="prose [&_p]:py-2" x-html="activeProduct.descriptionHtml"></div>
 
-                            <div class="py-1" x-data="cart()">
+                            <div class="py-1">
                                 <template
                                     x-if="activeProduct.active && activeProduct.variants.edges.length > 0"
                                     x-for="variant in activeProduct.variants.edges"
@@ -148,13 +141,13 @@ const jitsi_jwt_token = generate(
                                     <button
                                         :merchandiseId="variant.node.id"
                                         x-data="{adding:false,added:null}"
-                                        @click.prevent="adding=true; added=await addItem(variant?.node.id); adding=false;"
+                                        @click.prevent="adding=true; added=await Alpine.store('globalCart').addItem(variant?.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},800)"
                                         :disabled="!variant?.node.availableForSale"
-                                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false,'opacity-15':!variant?.node.availableForSale}"
-                                        class="appearance-none font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
+                                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
+                                        class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
                                     >
                                         <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
-                                            x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
+                                            -x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
                                     </button>
                                 </template>
                                 <form method="dialog">
@@ -182,11 +175,14 @@ const jitsi_jwt_token = generate(
                         />
                     </div>
                 </template>
+                <ShoppingCart />
             </section>
             <section class="bg-green-300 h-40 border-t border-black place-content-center grid">
-                <ShoppingCartButton>[ CART <span x-show="data.totalItems" x-text="`(${data.totalItems})`"></span>]</ShoppingCartButton>
+                <ShoppingCartButton
+                    >[ THE CART <span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
+                    ></span>]</ShoppingCartButton
+                >
                 <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
-                <ShoppingCart />
             </section>
         </aside>
     </div>

@@ -6,6 +6,7 @@ const cartCreate = gql`
             cart {
                 id
                 checkoutUrl
+                totalQuantity
             }
             userErrors {
                 message
@@ -97,6 +98,7 @@ const cartLinesUpdate = gql`
                             cost {
                                 totalAmount {
                                     amount
+                                    currencyCode
                                 }
                             }
                         }
@@ -146,6 +148,7 @@ const getCart = gql`
                         cost {
                             totalAmount {
                                 amount
+                                currencyCode
                             }
                         }
                     }
@@ -164,4 +167,39 @@ const getCart = gql`
     }
 `;
 
-export { cartCreate, cartLinesAdd, cartLinesUpdate, getCart };
+const getProductsByCollection = gql`
+    query getProductsByColHandle($handle: String!) {
+        collection(handle: $handle) {
+            id
+            title
+            descriptionHtml
+            products(first: 150) {
+                edges {
+                    node {
+                        id
+                        title
+                        featuredImage {
+                            url(transform: { maxHeight: 300, crop: CENTER, maxWidth: 300 })
+                        }
+                        variants(first: 10) {
+                            edges {
+                                node {
+                                    id
+                                    title
+                                    availableForSale
+                                    quantityAvailable
+                                    price {
+                                        amount
+                                        currencyCode
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export { cartCreate, cartLinesAdd, cartLinesUpdate, getCart, getProductsByCollection };

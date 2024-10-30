@@ -1,15 +1,7 @@
 ---
-
+interface Props extends HTMLAttributes<'button'> {}
 ---
 
-<button x-data><div @click="data.cartIsOpen=!data.cartIsOpen"><slot>[<span x-text="data.cartIsOpen?'close':'open'"></span>]</slot></div></button>
-
-<script>
-    import Alpine from 'alpinejs';
-    import Cart from '../assets/cart.js';
-    window.Cart = Cart;
-    let data = Alpine.$data(document.querySelector('[x-ref="shoppingcart"]'));
-    data.D.Cart = Cart;
-    data.cost = Cart.cost;
-    data.lines = Cart.lines;
-</script>
+<button x-data {...Astro.props}
+    ><div @click="Alpine.store('globalCart').toggle()"><slot>[<span x-text="Alpine.store('globalCart').open?'close':'open'"></span>]</slot></div></button
+>

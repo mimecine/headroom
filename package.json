@@ -10,6 +10,7 @@
         "astro": "astro"
     },
     "dependencies": {
+        "@alpinejs/persist": "^3.14.3",
         "@astrojs/alpinejs": "^0.4.0",
         "@astrojs/netlify": "^5.5.4",
         "@astrojs/react": "^3.6.2",
@@ -23,6 +24,7 @@
         "@types/react": "^18.3.11",
         "@types/react-dom": "^18.3.1",
         "alpinejs": "^3.14.3",
+        "alpinejs-component": "^1.2.7",
         "astro": "^4.16.6",
         "blobshape": "^1.0.0",
         "jsonwebtoken": "^9.0.2",

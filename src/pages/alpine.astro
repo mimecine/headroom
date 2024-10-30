@@ -4,7 +4,30 @@ import Test from '../components/Test.astro';
 import Target from '../components/Target.astro';
 ---
 
-<Layout title="Plain w Component">
-    <Target />
-    <Test>test</Test>
-</Layout>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Test</title>
+    </head>
+    <body>
+        <div x-data>
+            <button @click="Alpine.store('obj').toggle()">Toggle</button>
+            <div x-show="Alpine.store('obj').open">Hi, Obj is open</div>
+            <div x-text="Alpine.store('obj').child.msg1"></div>
+            <button @click="Alpine.store('obj').child.msg1 += ', X'">Add X</button>
+        </div>
+        <button x-data @click="Alpine.store('obj').child.msg1 += ', Y'">Add Y</button>
+    </body>
+    <!-- <body x-data="test" x-ref="test">
+        Test
+        <div x-text="open ? 'show' : 'hide'"></div>
+        <div x-text="lines.length"></div>
+
+        <button x-data @click="toggle()">toggle</button>
+
+        <button x-data @click="toggle()">toggle</button>
+    </body>
+    <script is:inline></script> -->
+</html>

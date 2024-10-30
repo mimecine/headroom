@@ -1,18 +1,16 @@
 ---
-interface Props extends HTMLAttributes<'div'> {
-    open?: boolean;
+interface Props {
+    openLabel?: string;
+    closeLabel?: string;
 }
 
 const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
 ---
 
-<div x-data="{toggle(){Alpine.store('globalCart').toggle()}}" {...Astro.props}>
-    <div
-        class="absolute inset-0 w-40 xmin-h-full p-2 bg-red-200 border-r border-black text-red-900 grid grid-flow-row grid-rows-[auto,1fr,auto]"
-        x-show="Alpine.store('globalCart').open"
-    >
+<div x-data="getcart" x-init="open=true" x-ref="shoppingcart">
+    <div class="absolute right-0 top-0 w-40 min-h-screen p-2 bg-red-200 border-l-2 text-red-900 grid grid-flow-row grid-rows-[auto,1fr,auto]" x-show="open">
         <div class="w-full text-right">
-            <button @click="toggle()" class="pb-2 text-black hover:text-red-500" x-ref="openbutton">
+            <button @click="open=false" class="pb-2 text-black hover:text-red-500" x-ref="openbutton">
                 <svg class="h-6 w-6 text-right" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -20,7 +18,7 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
         </div>
         <div>
             <div class="gap-2 grid grid-cols-2">
-                <template x-for="line in Alpine.store('globalCart').lines" :key="line.id">
+                <template x-for="line in $store.Cart.lines" :key="line.id">
                     <div class="text-right" x-data="{quantity:line.quantity}">
                         <!-- <h3 class="text-sm" x-text="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"></h3> -->
                         <img
@@ -34,30 +32,37 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
                         <button
                             x-data="{waiting:false}"
                             :class="{'opacity-50 rotate-45':waiting}"
-                            @click="waiting=true; await Alpine.store('globalCart').removeItem(line.merchandise.id) && quantity--; waiting=false">[-]</button
+                            class="hover:text-red-500"
+                            :disabled="waiting"
+                            @click="waiting=true; await $store.Cart.removeItem(line.merchandise.id) && quantity--; waiting=false">[-]</button
                         >
-                        <span x-text="line.quantity" class="font-bold"></span>
+                        <span x-text="quantity" class="font-bold"></span>
+                        <!-- @
+                        <span
+                            x-text="Intl.NumberFormat('en-US',{style: 'currency', currency: 'USD',trailingZeroDisplay:'stripIfInteger' }).format(line.merchandise.price.amount)"
+                        ></span> -->
                         <button
                             x-data="{waiting:false}"
                             :class="{'opacity-50 rotate-45':waiting}"
                             class="hover:text-red-500"
-                            @click="waiting=true; await Alpine.store('globalCart').addItem(line.merchandise.id) && quantity++ ; waiting=false">[+]</button
+                            :disabled="waiting"
+                            @click="waiting=true; await $store.Cart.addItem(line.merchandise.id) && quantity++ ; waiting=false">[+]</button
                         >
                     </div>
                 </template>
                 <slot />
             </div>
-            <div x-show="Alpine.store('globalCart').lines.length == 0" class="h-full text-center grid items-center text-red-500">HEY, IS EMPTY!</div>
+            <div x-show="lines.length == 0" class="h-full text-center grid items-center text-red-500">HEY, IS EMPTY!</div>
         </div>
-        <div class="text-right" x-show="Alpine.store('globalCart').lines.length">
+        <div class="text-right">
             ----------------<br />
             <p>
                 Total-ish: <span
-                    x-text="Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD',trailingZeroDisplay:'stripIfInteger' }).format(Alpine.store('globalCart').cost)"
+                    x-text="Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD',trailingZeroDisplay:'stripIfInteger' }).format(globalCart.cost)"
                 ></span>
             </p>
             <p>Tax & Ship: LATER</p>
-            <a :href="Alpine.store('globalCart').checkoutUrl" target="_cart"><button class="py-1 font-bold mt-8"> &gt; CHECKOUT</button></a>
+            <a :href="$store.Cart?.checkoutUrl"><button class="py-1 font-bold mt-8"> &gt; CHECKOUT</button></a>
         </div>
     </div>
 </div>

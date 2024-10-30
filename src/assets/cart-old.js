@@ -1,75 +1,71 @@
 import { createStorefrontApiClient } from '@shopify/storefront-api-client';
 import { cartCreate, cartLinesAdd, cartLinesUpdate, getCart } from './gqldefs';
 
-const Cart = await (async () => {
-    let cartId = localStorage.getItem('cartId') || null;
-    let checkoutUrl = localStorage.getItem('checkoutUrl') || null;
-    let lines = [];
-    let cost = null;
+let cartId = localStorage.getItem('cartId') || null;
+let checkoutUrl = localStorage.getItem('checkoutUrl') || null;
+let lines = null;
+let cost = null;
 
-    const client = createStorefrontApiClient({
-        storeDomain: 'http://kioskinkiosk.myshopify.com',
-        apiVersion: '2024-10',
-        publicAccessToken: '7766fe447c722c1317e528bdc92f1f2d'
-    });
+const client = createStorefrontApiClient({
+    storeDomain: 'http://kioskinkiosk.myshopify.com',
+    apiVersion: '2024-10',
+    publicAccessToken: '7766fe447c722c1317e528bdc92f1f2d'
+});
 
-    const initCart = async () => {
-        await (async () => {
-            const { data, errors, extensions } = await client.request(cartCreate, {
-                variables: {
-                    input: { lines: [] }
-                }
-            });
-            if (errors) {
-                console.log('ERR:Create: ', errors);
-                return;
+const initCart = async () => {
+    await (async () => {
+        const { data, errors, extensions } = await client.request(cartCreate, {
+            variables: {
+                input: { lines: [] }
             }
-            cartId = data.cartCreate.cart.id;
-            localStorage.setItem('cartId', cartId);
-            checkoutUrl = data.cartCreate.cart.checkoutUrl;
-            localStorage.setItem('checkoutUrl', checkoutUrl);
-            return cartId;
-        })();
-    };
-
-    const fetchCart = async () => {
-        if (!cartId || !checkoutUrl) {
-            await initCart();
-        }
-        if (!cartId || !checkoutUrl) {
+        });
+        if (errors) {
+            console.log('ERR:Create: ', errors);
             return;
         }
-        await (async () => {
-            const { data, errors, extensions } = await client.request(getCart, {
-                variables: {
-                    cartId
-                }
-            });
-            if (errors) {
-                console.log('ERR:Get: ', errors);
-                return false;
+        cartId = data.cartCreate.cart.id;
+        localStorage.setItem('cartId', cartId);
+        checkoutUrl = data.cartCreate.cart.checkoutUrl;
+        localStorage.setItem('checkoutUrl', checkoutUrl);
+        return cartId;
+    })();
+};
+
+const fetchCart = async () => {
+    if (!cartId || !checkoutUrl) {
+        await initCart();
+    }
+    if (!cartId || !checkoutUrl) {
+        return;
+    }
+    await (async () => {
+        const { data, errors, extensions } = await client.request(getCart, {
+            variables: {
+                cartId
             }
-            cartId = data.cart.id;
-            localStorage.setItem('cartId', cartId);
-            checkoutUrl = data.cart.checkoutUrl;
-            localStorage.setItem('checkoutUrl', checkoutUrl);
-            lines = data.cart.lines.edges.map((line) => line.node);
-            cost = data.cart.cost.totalAmount.amount;
-            console.log('Cart fetched - cartId: ', cartId);
-            return cartId;
-        })();
-    };
+        });
+        if (errors) {
+            console.log('ERR:Get: ', errors);
+            return false;
+        }
+        cartId = data.cart.id;
+        localStorage.setItem('cartId', cartId);
+        checkoutUrl = data.cart.checkoutUrl;
+        localStorage.setItem('checkoutUrl', checkoutUrl);
+        lines = data.cart.lines.edges.map((line) => line.node);
+        cost = data.cart.cost.totalAmount.amount;
+        console.log('Cart fetched - cartId: ', cartId);
+        return cartId;
+    })();
+};
 
-    await fetchCart();
+await fetchCart();
 
+const Cart = await (async (client) => {
     return await (async () => {
         return {
-            open: false,
-            toggle() {
-                this.open = !this.open;
-            },
-            lines: lines,
-            cost: cost,
+            lines,
+            cost,
             addItem: async (merchandiseId, quantity = 1) => {
                 const { data, errors, extensions } = await client.request(cartLinesAdd, {
                     variables: {
@@ -145,6 +141,8 @@ const Cart = await (async () => {
             initCart
         };
     })();
-})();
+})(client);
+
+console.log('Cart: ', cartId, checkoutUrl, lines, cost);
 
 export default Cart;
