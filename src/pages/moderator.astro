@@ -111,16 +111,16 @@ const jitsi_jwt_token = generate(
             <div id="jaas-container" class="h-full"></div>
         </main>
 
-        <aside class="w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
+        <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
             <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
                 <dialog
                     id="productView"
                     x-ref="productView"
                     @key.escape="activeProduct=null"
-                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-[60vw] left-4 top-4 p-4 bg-opacity-80 border border-black"
+                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-full lg:max-w-[60vw] xleft-4 xtop-4 p-4 bg-opacity-80 border border-black"
                 >
                     <template x-if="null!=activeProduct">
-                        <div class="columns-3">
+                        <div class="columns-2 lg:columns-3">
                             <img
                                 height="200"
                                 width="200"
@@ -147,7 +147,7 @@ const jitsi_jwt_token = generate(
                                         class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
                                     >
                                         <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
-                                            -x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
+                                            x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
                                     </button>
                                 </template>
                                 <form method="dialog">
@@ -162,8 +162,8 @@ const jitsi_jwt_token = generate(
                         </div>
                     </template>
                 </dialog>
-                <template x-for="p in $store.products">
-                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100">
+                <template x-for="(p,i) in $store.products">
+                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto" :class="['w-full','w-4/5','w-3/5','w-2/5','w-1/5'].at(i)||'hidden'">
                         <img
                             height="200"
                             width="200"
@@ -177,9 +177,9 @@ const jitsi_jwt_token = generate(
                 </template>
                 <ShoppingCart />
             </section>
-            <section class="bg-green-300 h-40 border-t border-black place-content-center grid">
+            <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
                 <ShoppingCartButton
-                    >[ THE CART <span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
+                    >[CART<span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
                     ></span>]</ShoppingCartButton
                 >
                 <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
