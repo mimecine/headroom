@@ -61,53 +61,6 @@ const jitsi_jwt_token = generate(
 <Layout title="Headroom Moderator">
     <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
         <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
-            <script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
-            <script define:vars={{ jitsi_jwt_token }}>
-                window.addEventListener('load', () => {
-                    const api = new JitsiMeetExternalAPI('8x8.vc', {
-                        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
-                        parentNode: document.querySelector('#jaas-container'),
-                        dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
-                        configOverwrite: {
-                            apiLogLevels: ['error'],
-                            prejoinPageEnabled: false,
-                            disabledNotifications: [
-                                'notify.chatMessages' // shown when receiving chat messages while the chat window is closed
-                                // 'notify.grantedTo' // shown when moderator rights were granted to a participant
-                            ]
-                        },
-                        jwt: jitsi_jwt_token
-                    });
-
-                    window.jitsi = api;
-
-                    window.handleMessage = async (e) => {
-                        const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
-                        const res = re.exec(e.message || e.subject);
-                        console.log('match:', res);
-                        if (res != null) {
-                            switch (res.groups.cmd) {
-                                case 's':
-                                    let products = await suggestProducts(res.groups.args);
-                                    if (products.length > 0) {
-                                        console.log('F::', products);
-                                        Alpine.store('products').unshift(products.at(0));
-                                        // TODO: deduplicate list
-                                    }
-                            }
-                        }
-                    };
-
-                    jitsi.addListener('incomingMessage', window.handleMessage);
-                    jitsi.addListener('outgoingMessage', window.handleMessage);
-
-                    jitsi.addListener('participantRoleChanged', async (e) => {
-                        console.log('participantRoleChanged event:', e);
-                        window.ismoderator = e.role === 'moderator';
-                        Alpine.store('moderator', window.ismoderator);
-                    });
-                });
-            </script>
             <div id="jaas-container" class="h-full"></div>
         </main>
 
@@ -187,3 +140,43 @@ const jitsi_jwt_token = generate(
         </aside>
     </div>
 </Layout>
+<script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
+<script define:vars={{ jitsi_jwt_token }}>
+    window.addEventListener('load', () => {
+        window.jitsi = new JitsiMeetExternalAPI('8x8.vc', {
+            roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+            parentNode: document.querySelector('#jaas-container'),
+            dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+            configOverwrite: {
+                apiLogLevels: ['error'],
+                prejoinPageEnabled: false,
+                disabledNotifications: ['notify.chatMessages']
+            },
+            jwt: jitsi_jwt_token
+        });
+
+        handleMessage = async (e) => {
+            const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+            const res = re.exec(e.message || e.subject);
+            console.log('match:', res);
+            if (res != null) {
+                switch (res.groups.cmd) {
+                    case 's':
+                        let products = await suggestProducts(res.groups.args);
+                        if (products.length > 0) {
+                            console.log('F::', products);
+                            Alpine.store('products').unshift(products.at(0));
+                            // TODO: deduplicate list
+                        }
+                }
+            }
+        };
+
+        jitsi.addListener('incomingMessage', handleMessage);
+        jitsi.addListener('outgoingMessage', handleMessage);
+        jitsi.addListener('participantRoleChanged', async (e) => {
+            window.ismoderator = e.role === 'moderator';
+            Alpine.store('moderator', window.ismoderator);
+        });
+    });
+</script>
