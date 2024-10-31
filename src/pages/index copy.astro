@@ -88,7 +88,7 @@ const jitsi_jwt_token = generate(
                         roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
                         parentNode: document.querySelector('#jaas-container'),
                         configOverwrite: {
-                            toolbarButtons: ['microphone', 'camera', 'hangup'],
+                            toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
                             prejoinPageEnabled: false,
                             apiLogLevels: ['error'],
                             disabledNotifications: [
@@ -195,10 +195,10 @@ const jitsi_jwt_token = generate(
                                     <button
                                         :merchandiseId="variant.node.id"
                                         x-data="{adding:false,added:null}"
-                                        @click.prevent="adding=true; added=await Cart.addItem(variant?.node.id); adding=false;"
+                                        @click.prevent="adding=true; added=await await Alpine.store('globalCart').addItem(variant?.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},500)"
                                         :disabled="!variant?.node.availableForSale"
-                                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false,'opacity-15':!variant?.node.availableForSale}"
-                                        class="appearance-none font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
+                                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
+                                        class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
                                     >
                                         <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
                                             x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
@@ -231,7 +231,10 @@ const jitsi_jwt_token = generate(
                 </template>
             </section>
             <section class="bg-green-300 h-40 border-t border-black place-content-center grid">
-                <ShoppingCartButton>[ CART <span x-show="data.totalItems" x-text="`(${data.totalItems})`"></span>]</ShoppingCartButton>
+                <ShoppingCartButton
+                    >[ THE CART <span x-show="Alpine.store('globalCart').lines.length" x-text="`(${dAlpine.store('globalCart').totalQuantity})`"
+                    ></span>]</ShoppingCartButton
+                >
 
                 <ShoppingCart />
             </section>

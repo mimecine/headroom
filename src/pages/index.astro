@@ -66,115 +66,31 @@ const jitsi_jwt_token = generate(
         moderator: false
     }
 );
+
+const configOverwrite = {
+    apiLogLevels: ['error'],
+    toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
+    prejoinPageEnabled: false,
+    disabledNotifications: ['notify.chatMessages']
+};
 ---
 
-<Layout title="KIOSK:Headroom">
-    <div x-data="cart()" class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
+<Layout title="KIOSK: Headroom">
+    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
         <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
-            <script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
-            <style>
-                #jaas-container {
-                    height: 100%;
-                }
-            </style>
-            <script type="text/javascript" define:vars={{ jitsi_jwt_token }}>
-                window.addEventListener('alpine:init', () => {
-                    Alpine.store('products', []);
-                    Alpine.store('cart', {});
-                    Alpine.store('moderator', false);
-                });
-                window.addEventListener('load', () => {
-                    const api = new JitsiMeetExternalAPI('8x8.vc', {
-                        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
-                        parentNode: document.querySelector('#jaas-container'),
-                        configOverwrite: {
-                            toolbarButtons: ['microphone', 'camera', 'hangup'],
-                            prejoinPageEnabled: false,
-                            apiLogLevels: ['error'],
-                            disabledNotifications: [
-                                'notify.chatMessages' // shown when receiving chat messages while the chat window is closed
-                                // 'notify.grantedTo' // shown when moderator rights were granted to a participant
-                            ]
-                        },
-                        interfaceConfigOverwrite: {
-                            DISABLE_VIDEO_BACKGROUND: false,
-                            DEFAULT_BACKGROUND: '#a8c8f9',
-                            AUDIO_LEVEL_PRIMARY_COLOR: 'rgba(255,0,0,0.4)',
-                            AUDIO_LEVEL_SECONDARY_COLOR: 'rgba(0,0,255,0.2)'
-                        },
-
-                        jwt: jitsi_jwt_token
-                    });
-
-                    window.jitsi = api;
-
-                    Alpine.store('products', []);
-                    Alpine.store('cart', {});
-
-                    window.handleMessage = async (e) => {
-                        console.log('message:', e);
-                        const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
-                        const res = re.exec(e.message || e.subject);
-                        console.log('match:', res);
-                        if (res != null) {
-                            switch (res.groups.cmd) {
-                                case 's':
-                                    let products = await suggestProducts(res.groups.args);
-                                    if (products.length > 0) {
-                                        console.log('F::', products);
-                                        Alpine.store('products').unshift(products.at(0));
-                                    }
-                            }
-                            return false;
-                        }
-                    };
-
-                    jitsi.addListener('incomingMessage', window.handleMessage);
-                    jitsi.addListener('message', async (e) => {
-                        console.log('message event:', e);
-                    });
-                    jitsi.addListener('subjectChange', async (e) => {
-                        console.log('subjectChange event:', e);
-                        let products = await suggestProducts(e.subject);
-                        if (products.length > 0) {
-                            console.log('F::', products);
-                            Alpine.store('products').unshift(products.at(0));
-                        }
-                    });
-                    jitsi.addListener('participantRoleChanged', async (e) => {
-                        console.log('participantRoleChanged event:', e);
-                        window.ismoderator = e.role === 'moderator';
-                    });
-
-                    async function fetchWithTimeout(resource, options = {}) {
-                        const { timeout = 8000 } = options;
-
-                        const controller = new AbortController();
-                        const id = setTimeout(() => controller.abort(), timeout);
-
-                        const response = await fetch(resource, {
-                            ...options,
-                            signal: controller.signal
-                        });
-
-                        clearTimeout(id);
-                        return response;
-                    }
-                });
-            </script>
-            <div id="jaas-container"></div>
+            <div id="jaas-container" class="h-full"></div>
         </main>
 
-        <aside class="w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
-            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]">
+        <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
+            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
                 <dialog
                     id="productView"
                     x-ref="productView"
                     @key.escape="activeProduct=null"
-                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-[60vw] left-4 top-4 p-4 bg-opacity-80 border border-black"
+                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-full lg:max-w-[60vw] xleft-4 xtop-4 p-4 bg-opacity-80 border border-black"
                 >
                     <template x-if="null!=activeProduct">
-                        <div class="columns-3">
+                        <div class="columns-2 lg:columns-3">
                             <img
                                 height="200"
                                 width="200"
@@ -184,7 +100,7 @@ const jitsi_jwt_token = generate(
                                 class="border border-black object-contain cursor-pointer xw-[20vw] aspect-square"
                             />
                             <h1 x-text="activeProduct.title" class="sans font-bold uppercase py-2"></h1>
-                            <div class="prose" x-html="activeProduct.descriptionHtml"></div>
+                            <div class="prose [&_p]:py-2" x-html="activeProduct.descriptionHtml"></div>
 
                             <div class="py-1">
                                 <template
@@ -195,7 +111,7 @@ const jitsi_jwt_token = generate(
                                     <button
                                         :merchandiseId="variant.node.id"
                                         x-data="{adding:false,added:null}"
-                                        @click.prevent="adding=true; added=await await Alpine.store('globalCart').addItem(variant?.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},500)"
+                                        @click.prevent="adding=true; added=await Alpine.store('globalCart').addItem(variant?.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},800)"
                                         :disabled="!variant?.node.availableForSale"
                                         :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
                                         class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
@@ -216,8 +132,8 @@ const jitsi_jwt_token = generate(
                         </div>
                     </template>
                 </dialog>
-                <template x-for="p in $store.products">
-                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100">
+                <template x-for="(p,i) in $store.products">
+                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto" :class="['w-full','w-4/5','w-3/5','w-2/5','w-1/5'].at(i)||'hidden'">
                         <img
                             height="200"
                             width="200"
@@ -229,15 +145,51 @@ const jitsi_jwt_token = generate(
                         />
                     </div>
                 </template>
+                <ShoppingCart />
             </section>
-            <section class="bg-green-300 h-40 border-t border-black place-content-center grid">
+            <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
                 <ShoppingCartButton
-                    >[ THE CART <span x-show="Alpine.store('globalCart').lines.length" x-text="`(${dAlpine.store('globalCart').totalQuantity})`"
+                    >[CART<span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
                     ></span>]</ShoppingCartButton
                 >
-
-                <ShoppingCart />
+                <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
             </section>
         </aside>
     </div>
 </Layout>
+<script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
+<script define:vars={{ jitsi_jwt_token, configOverwrite }}>
+    window.addEventListener('load', () => {
+        window.jitsi = new JitsiMeetExternalAPI('8x8.vc', {
+            roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+            parentNode: document.querySelector('#jaas-container'),
+            dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+            jwt: jitsi_jwt_token,
+            configOverwrite
+        });
+
+        handleMessage = async (e) => {
+            const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+            const res = re.exec(e.message || e.subject);
+            console.log('match:', res);
+            if (res != null) {
+                switch (res.groups.cmd) {
+                    case 's':
+                        let products = await suggestProducts(res.groups.args);
+                        if (products.length > 0) {
+                            console.log('F::', products);
+                            Alpine.store('products').unshift(products.at(0));
+                            // TODO: deduplicate list
+                        }
+                }
+            }
+        };
+
+        jitsi.addListener('incomingMessage', handleMessage);
+        jitsi.addListener('outgoingMessage', handleMessage);
+        jitsi.addListener('participantRoleChanged', async (e) => {
+            window.ismoderator = e.role === 'moderator';
+            Alpine.store('moderator', window.ismoderator);
+        });
+    });
+</script>
