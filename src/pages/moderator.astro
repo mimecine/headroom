@@ -49,7 +49,7 @@ const jitsi_jwt_token = generate(
     {
         id: uuid(),
         name: 'KIOSK',
-        email: 'my user email',
+        email: 'marco@kioskkiosk.com',
         avatar: 'my avatar url',
         appId: process.env.JITSI_API_APPID, // Your AppID ( previously tenant )
         kid: process.env.JITSI_API_KEY,
@@ -122,7 +122,10 @@ const configOverwrite = {
                     </template>
                 </dialog>
                 <template x-for="(p,i) in $store.products">
-                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto" :class="['w-full','w-4/5','w-3/5','w-2/5','w-1/5'].at(i)||'hidden'">
+                    <div
+                        class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto"
+                        :class="['w-full','w-11/12','w-10/12','w-9/12','w-8/12','w-7/12','w-6/12','w-5/12','w-4/12','w-3/12','w-2/12','w-1/12'].at(i)||'hidden'"
+                    >
                         <img
                             height="200"
                             width="200"

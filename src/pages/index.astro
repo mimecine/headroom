@@ -133,7 +133,10 @@ const configOverwrite = {
                     </template>
                 </dialog>
                 <template x-for="(p,i) in $store.products">
-                    <div class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto" :class="['w-full','w-4/5','w-3/5','w-2/5','w-1/5'].at(i)||'hidden'">
+                    <div
+                        class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto"
+                        :class="['w-full','w-11/12','w-10/12','w-9/12','w-8/12','w-7/12','w-6/12','w-5/12','w-4/12','w-3/12','w-2/12','w-1/12'].at(i)||'hidden'"
+                    >
                         <img
                             height="200"
                             width="200"
@@ -167,7 +170,7 @@ const configOverwrite = {
             jwt: jitsi_jwt_token,
             configOverwrite
         });
-
+        let messageCounter = 0;
         handleMessage = async (e) => {
             const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
             const res = re.exec(e.message || e.subject);
@@ -177,8 +180,12 @@ const configOverwrite = {
                     case 's':
                         let products = await suggestProducts(res.groups.args);
                         if (products.length > 0) {
-                            console.log('F::', products);
+                            products[0].order = messageCounter++;
                             Alpine.store('products').unshift(products.at(0));
+                            Alpine.store(
+                                'products',
+                                Alpine.store('products').sort((a, b) => a.order - b.order)
+                            );
                             // TODO: deduplicate list
                         }
                 }
@@ -187,6 +194,8 @@ const configOverwrite = {
 
         jitsi.addListener('incomingMessage', handleMessage);
         jitsi.addListener('outgoingMessage', handleMessage);
+        jitsi.addListener('incomingMessage', (e) => console.log('incoming:', e));
+
         jitsi.addListener('participantRoleChanged', async (e) => {
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
