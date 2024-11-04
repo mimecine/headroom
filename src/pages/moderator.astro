@@ -62,6 +62,19 @@ const configOverwrite = {
     prejoinPageEnabled: false,
     disabledNotifications: ['notify.chatMessages']
 };
+const Jitsi = {
+    Jaas: {
+        domain: '8x8.vc',
+        magicCookie: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574',
+        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+        dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+        jwt: jitsi_jwt_token
+    },
+    Self: {
+        domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
+        roomName: 'KIOSK_Headroom'
+    }
+}.Jaas;
 ---
 
 <Layout title="Headroom Moderator">
@@ -149,11 +162,14 @@ const configOverwrite = {
         </aside>
     </div>
 </Layout>
-<script async src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
-<script define:vars={{ jitsi_jwt_token, configOverwrite }}>
+<script
+    async
+    src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}
+    -x-src="https://8x8.vc/vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/external_api.js"></script>
+<script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
     window.addEventListener('load', () => {
-        window.jitsi = new JitsiMeetExternalAPI('8x8.vc', {
-            roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+        window.jitsi = new JitsiMeetExternalAPI(Jitsi.domain, {
+            roomName: `${Jitsi.magicCookie || ''}/KIOSK_Headroom`,
             parentNode: document.querySelector('#jaas-container'),
             dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
             jwt: jitsi_jwt_token,
@@ -171,6 +187,8 @@ const configOverwrite = {
                         if (products.length > 0) {
                             console.log('F::', products);
                             Alpine.store('products').unshift(products.at(0));
+                            Alpine.store('products').sort((a, b) => b.order - a.order);
+
                             // TODO: deduplicate list
                         }
                 }

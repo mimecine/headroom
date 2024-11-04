@@ -73,6 +73,19 @@ const configOverwrite = {
     prejoinPageEnabled: false,
     disabledNotifications: ['notify.chatMessages']
 };
+const Jitsi = {
+    Jaas: {
+        domain: '8x8.vc',
+        magicCookie: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574',
+        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+        dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+        jwt: jitsi_jwt_token
+    },
+    Self: {
+        domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
+        roomName: 'KIOSK_Headroom'
+    }
+}.Jaas;
 ---
 
 <Layout title="KIOSK: Headroom">
@@ -182,10 +195,13 @@ const configOverwrite = {
                         if (products.length > 0) {
                             products[0].order = messageCounter++;
                             Alpine.store('products').unshift(products.at(0));
-                            Alpine.store(
-                                'products',
-                                Alpine.store('products').sort((a, b) => a.order - b.order)
-                            );
+
+                            Alpine.store('products').sort((a, b) => b.order - a.order);
+
+                            // Alpine.store(
+                            //     'products',
+                            //     Alpine.store('products').sort((a, b) => b.order - a.order)
+                            // );
                             // TODO: deduplicate list
                         }
                 }
