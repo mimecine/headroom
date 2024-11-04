@@ -185,36 +185,36 @@ const Jitsi = {
         });
         let messageCounter = 0;
         handleMessage = async (e) => {
-            const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+            const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)? (?<args>.*)');
             const res = re.exec(e.message || e.subject);
-            console.log('match:', res);
+            console.log('match:', res, e.message, re);
             if (res != null) {
                 switch (res.groups.cmd) {
-                    case 's':
-                        let products = await suggestProducts(res.groups.args);
-                        if (products.length > 0) {
-                            products[0].order = messageCounter++;
-                            Alpine.store('products').unshift(products.at(0));
+                    case 'addproduct':
+                        let order = res.groups.order;
+                        console.log('got addproduct:', res.groups.args, order);
+                        let product = await suggestProducts(res.groups.args);
+                        if (product.length > 0) {
+                            product.at(0).order = order;
+                            Alpine.store('products').unshift(product.at(0));
+                            Alpine.store('products', distinct(Alpine.store('products'), 'id'));
 
                             Alpine.store('products').sort((a, b) => b.order - a.order);
-
-                            // Alpine.store(
-                            //     'products',
-                            //     Alpine.store('products').sort((a, b) => b.order - a.order)
-                            // );
-                            // TODO: deduplicate list
                         }
+                        break;
+                    case 'log':
+                        console.log('got log:', res.groups.args, e.message);
+                        break;
                 }
             }
         };
 
         jitsi.addListener('incomingMessage', handleMessage);
-        jitsi.addListener('outgoingMessage', handleMessage);
-        jitsi.addListener('incomingMessage', (e) => console.log('incoming:', e));
 
         jitsi.addListener('participantRoleChanged', async (e) => {
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
         });
     });
+    let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
 </script>
