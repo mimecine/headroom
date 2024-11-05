@@ -202,7 +202,6 @@ const Jitsi = {
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
         });
-        let participantCounter = 0;
         jitsi.addListener('participantJoined', async (e) => {
             console.log('participantJoined', e, jitsi._participants[e.id].displayName);
             // let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
@@ -220,7 +219,6 @@ const Jitsi = {
                 jitsi.executeCommand('displayName', `# ${i + 1}`);
                 console.log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
             }
-            // set "First in line" "Second in line" etc based on who entered first with api.executeCommand('displayName', 'New Nickname');
         });
         jitsi.addListener('participantLeft', async (e) => {
             console.log('participantLeft', e);
@@ -238,4 +236,6 @@ const Jitsi = {
     });
     let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
     let participants = [];
+    let moderators = [];
+    let participantCounter = 0;
 </script>

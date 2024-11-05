@@ -18,14 +18,14 @@
         "@fontsource/inter": "^5.1.0",
         "@netlify/blobs": "^8.1.0",
         "@netlify/functions": "^2.8.2",
-        "@shopify/storefront-api-client": "^1.0.2",
+        "@shopify/storefront-api-client": "^1.0.3",
         "@types/alpinejs": "^3.13.10",
         "@types/jsonwebtoken": "^9.0.7",
-        "@types/react": "^18.3.11",
+        "@types/react": "^18.3.12",
         "@types/react-dom": "^18.3.1",
         "alpinejs": "^3.14.3",
         "alpinejs-component": "^1.2.7",
-        "astro": "^4.16.6",
+        "astro": "^4.16.9",
         "blobshape": "^1.0.0",
         "jsonwebtoken": "^9.0.2",
         "marked": "^13.0.3",
@@ -39,7 +39,7 @@
     },
     "devDependencies": {
         "@types/blobshape": "^1.0.3",
-        "@types/node": "^20.16.13",
-        "daisyui": "^4.12.13"
+        "@types/node": "^20.17.6",
+        "daisyui": "^4.12.14"
     }
 }
