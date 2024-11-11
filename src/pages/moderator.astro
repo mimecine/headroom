@@ -1,9 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ShoppingCartButton from '../components/ShoppingCartButton.astro';
+import ShoppingCart from '../components/ShoppingCart.astro';
+import ProductList from '../components/ProductList.astro';
+import ProductDialog from '../components/ProductDialog.astro';
+
 import uuid from 'uuid-random';
 import jsonwebtoken from 'jsonwebtoken';
-import ShoppingCart from '../components/ShoppingCart.astro';
 
 export const prerender = false;
 
@@ -85,72 +88,8 @@ const Jitsi = {
 
         <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
             <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
-                <dialog
-                    id="productView"
-                    x-ref="productView"
-                    @key.escape="activeProduct=null"
-                    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-full lg:max-w-[60vw] xleft-4 xtop-4 p-4 bg-opacity-80 border border-black"
-                >
-                    <template x-if="null!=activeProduct">
-                        <div class="columns-2 lg:columns-3">
-                            <img
-                                height="200"
-                                width="200"
-                                :src="activeProduct.featuredImage.url"
-                                :alt="activeProduct.title"
-                                :title="activeProduct.title"
-                                class="border border-black object-contain cursor-pointer xw-[20vw] aspect-square"
-                            />
-                            <h1 x-text="activeProduct.title" class="sans font-bold uppercase py-2"></h1>
-                            <div class="prose [&_p]:py-2" x-html="activeProduct.descriptionHtml"></div>
-
-                            <div class="py-1">
-                                <template
-                                    x-if="activeProduct.active && activeProduct.variants.edges.length > 0"
-                                    x-for="variant in activeProduct.variants.edges"
-                                    :key="variant.node.id"
-                                >
-                                    <button
-                                        :merchandiseId="variant.node.id"
-                                        x-data="{adding:false,added:null}"
-                                        @click.prevent="adding=true; added=await Alpine.store('globalCart').addItem(variant?.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},800)"
-                                        :disabled="!variant?.node.availableForSale"
-                                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
-                                        class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
-                                    >
-                                        <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
-                                            x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
-                                    </button>
-                                </template>
-                                <form method="dialog">
-                                    <button
-                                        type="submit"
-                                        class="appearance-none font-bold p-1 xm-1 border border-red bg-white bg-opacity-50 focus:outline-none"
-                                    >
-                                        close
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </template>
-                </dialog>
-                <template x-for="(p,i) in $store.products">
-                    <div
-                        class="p-2 pb-0 opacity-50 first-of-type:opacity-100 m-auto"
-                        :class="['w-full','w-11/12','w-10/12','w-9/12','w-8/12','w-7/12','w-6/12','w-5/12','w-4/12','w-3/12','w-2/12','w-1/12'].at(i)||'hidden'"
-                    >
-                        <img
-                            height="200"
-                            width="200"
-                            :src="p.featuredImage.url"
-                            :alt="p.title"
-                            :title="p.title"
-                            class="border border-black w-full cursor-pointer aspect-square bg-yellow-200"
-                            @click="activeProduct=p; $refs.productView.showModal()"
-                        />
-                    </div>
-                </template>
-                <ShoppingCart />
+                <ProductDialog />
+                <ProductList />
             </section>
             <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
                 <ShoppingCartButton
@@ -162,6 +101,7 @@ const Jitsi = {
         </aside>
     </div>
 </Layout>
+<ShoppingCart />
 <script async src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}></script>
 <script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
     window.addEventListener('load', () => {
@@ -195,10 +135,12 @@ const Jitsi = {
                 }
             }
         };
-
         jitsi.addListener('incomingMessage', handleMessage);
         jitsi.addListener('outgoingMessage', handleMessage);
         jitsi.addListener('participantRoleChanged', async (e) => {
+            _log('participantRoleChanged', e);
+            moderators.push(e.id);
+            participants.filter((p) => p.id !== e.id);
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
         });

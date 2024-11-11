@@ -114,7 +114,7 @@ export default (Alpine) => {
             })();
         },
         async addItem(merchandiseId, quantity = 1) {
-            const { data, errors } = await client.request(cartLinesAdd, {
+            const { data, errors, messages } = await client.request(cartLinesAdd, {
                 variables: {
                     cartId: this.cartId,
                     lines: [
@@ -129,10 +129,22 @@ export default (Alpine) => {
                 console.log('ERR:addVariant: ', errors);
                 return false;
             }
+            if (messages) {
+                console.log('ERR:addVariant: ', errors);
+                return false;
+            }
             this.lines = data.cartLinesAdd.cart.lines.edges.map((line) => line.node);
             this.cost = data.cartLinesAdd.cart.cost.totalAmount.amount;
-            console.log('qty', data.cartLinesAdd.cart.id);
-            // this.totalQuantity = data.cartLinesAdd.cart.totalQuantity;
+            console.log(
+                'qty',
+                this.lines.filter((line) => line.merchandise.id === merchandiseId).map((line) => line.quantity)
+            );
+            if (this.lines.filter((line) => line.merchandise.id === merchandiseId).map((line) => line.quantity) < 1) {
+                console.log('cleared', merchandiseId);
+                this.clearItem(merchandiseId);
+            }
+            this.totalQuantity = data.cartLinesAdd.cart.totalQuantity;
+            this.open = true;
 
             return { lines: this.lines, cost: this.cost };
         },
@@ -159,7 +171,8 @@ export default (Alpine) => {
             return { lines: this.lines, cost: this.cost };
         },
         async clearItem(merchandiseId) {
-            let line = lines.find((line) => line.merchandise.id === merchandiseId);
+            let line = this.lines.find((line) => line.merchandise.id === merchandiseId);
+            console.log('line to clear', line);
             const { data, errors } = await client.request(cartLinesUpdate, {
                 variables: {
                     cartId: this.cartId,

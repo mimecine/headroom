@@ -1,0 +1,50 @@
+---
+
+---
+
+<dialog
+    id="productView"
+    x-ref="productView"
+    @key.escape="activeProduct=null"
+    class="backdrop:bg-opacity-80 backdrop:bg-cyan-800 w-full lg:max-w-[60vw] xleft-4 xtop-4 p-4 bg-opacity-80 border border-black"
+>
+    <template x-if="null!=activeProduct">
+        <div class="columns-2 lg:columns-3">
+            <img
+                height="200"
+                width="200"
+                :src="activeProduct.featuredImage.url"
+                :alt="activeProduct.title"
+                :title="activeProduct.title"
+                class="border border-black object-contain cursor-pointer xw-[20vw] aspect-square"
+            />
+            <h1 x-text="activeProduct.title" class="sans font-bold uppercase py-2"></h1>
+            <div class="prose [&_p]:py-2" x-html="activeProduct.descriptionHtml"></div>
+
+            <div class="py-1">
+                <template
+                    x-if="activeProduct.active && activeProduct.variants.edges.length > 0"
+                    x-for="variant in activeProduct.variants.edges"
+                    :key="variant.node.id"
+                >
+                    <button
+                        :merchandiseId="variant?.node.id"
+                        x-data="{adding:false,added:null}"
+                        @click.prevent="adding=true; added=await Alpine.store('globalCart').addItem(variant.node.id); adding=false; setTimeout(()=>{$refs.productView.close()},800)"
+                        :disabled="variant.node.availableForSale == false"
+                        :class="{ 'bg-green-900':added, 'text-white':added, 'bg-orange-500':added==false}"
+                        class="appearance-none disabled:opacity-15 font-bold text-sm bold p-1 mb-1 mr-1 border border-black bg-opacity-50 focus:outline-none transition duration-500 first-of-type:hidden"
+                    >
+                        <span :class="{'animate-spin':adding}" x-text="added ? 'Got ' : 'Get ' "></span><span
+                            x-text="variant?.node.title!='Default Title'? variant?.node.title : 'It'"></span>
+                    </button>
+                </template>
+                <form method="dialog">
+                    <button type="submit" class="appearance-none font-bold p-1 xm-1 border border-red bg-white bg-opacity-50 focus:outline-none">
+                        close
+                    </button>
+                </form>
+            </div>
+        </div>
+    </template>
+</dialog>

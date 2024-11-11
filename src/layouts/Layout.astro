@@ -1,12 +1,5 @@
 ---
 import '../../src/styles/globals.css';
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/800.css';
-import interFont400 from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
-import interFont800 from '@fontsource/inter/files/inter-latin-800-normal.woff2?url';
-
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 
 interface Props {
     title: string;
@@ -23,11 +16,9 @@ const { title } = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="preload" as="font" type="font/woff2" href={interFont400} crossorigin />
-        <link rel="preload" as="font" type="font/woff2" href={interFont800} crossorigin />
         <slot name="head" />
     </head>
-    <body class="antialiased text-white bg-[#355C7D]" x-data>
+    <body class="antialiased text-white bg-[#355C7D] font-mono" x-data>
         <div class="flex flex-col min-h-screen xpx-6 bg-grid-pattern xsm:px-12">
             <div class="flex flex-col w-full xmax-w-5xl mx-auto grow">
                 <main class="grow"><slot /></main>
@@ -35,9 +26,6 @@ const { title } = Astro.props;
         </div>
     </body>
 </html>
-<script is:inline>
-    document.addEventListener('alpine:init', () => {});
-</script>
 <script>
     import { createStorefrontApiClient } from '@shopify/storefront-api-client';
 
@@ -73,15 +61,6 @@ const { title } = Astro.props;
                                 url(transform: { maxWidth: 300 })
                                 altText
                             }
-                            # images(first: 3) {
-                            #     edges {
-                            #         node {
-                            #             originalSrc
-                            #             url(transform: { maxWidth: 300 })
-                            #             altText
-                            #         }
-                            #     }
-                            # }
                             variants(first: 5) {
                                 edges {
                                     node {
@@ -102,21 +81,31 @@ const { title } = Astro.props;
         }
     `;
 
+    declare global {
+        interface Window {
+            suggestProducts: Function;
+            _log: Function;
+        }
+    }
     window.suggestProducts = async (words) => {
         const products = [];
         var { data } = await shp.shop.request(productSearchQuery, { variables: { query: `title:${words}`, first: 5 } });
         data?.search?.edges.map((p) => {
             p.node.from = 'shop';
             p.node.active = true;
+            console.log('shop', p.node.title);
             products.push(p.node);
         });
         var { data } = await shp.archive.request(productSearchQuery, { variables: { query: `title:${words}`, first: 5 } });
         data?.search?.edges.map((p) => {
             p.node.from = 'archive';
+            p.node.active = false;
+            console.log('archive', p.node.title);
             products.push(p.node);
         });
         return products;
     };
+    window._log = (msg) => console.log(msg);
 </script>
 <style>
     #jaas-container {

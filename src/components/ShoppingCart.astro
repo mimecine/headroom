@@ -21,8 +21,7 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
         <div>
             <div class="gap-2 grid grid-cols-2">
                 <template x-for="line in Alpine.store('globalCart').lines" :key="line.id">
-                    <div class="text-right" x-data="{quantity:line.quantity}">
-                        <!-- <h3 class="text-sm" x-text="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"></h3> -->
+                    <div class="text-right text-xs" x-data="{quantity:line.quantity}">
                         <img
                             class="w-full border border-current"
                             :src="line.merchandise.image.url"
@@ -31,6 +30,8 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
                             :alt="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"
                             :title="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"
                         />
+                        <!-- <h3 class="text-xs text-[0.6rem]" x-show="line.merchandise.title!='Default Title'" x-text="`${line.merchandise.title}`"></h3>
+                        <h3 class="text-xs text-[0.6rem]" x-show="line.merchandise.title=='Default Title'" x-text="`${line.merchandise.product.title}`"></h3> -->
                         <button
                             x-data="{waiting:false}"
                             :class="{'opacity-50 rotate-45':waiting}"
