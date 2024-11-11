@@ -107,8 +107,8 @@ const Jitsi = {
             </section>
         </aside>
     </div>
+    <ShoppingCart />
 </Layout>
-<ShoppingCart />
 <script async src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}></script>
 <script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
     window.addEventListener('load', () => {
