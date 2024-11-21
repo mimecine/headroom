@@ -75,9 +75,10 @@ const Jitsi = {
     },
     Self: {
         domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
-        roomName: 'KIOSK_Headroom'
+        roomName: 'KIOSK_Headroom',
+        jwt: null
     }
-}.Jaas;
+}.Self;
 ---
 
 <Layout title="Headroom Moderator">
@@ -109,7 +110,7 @@ const Jitsi = {
             roomName: `${Jitsi.magicCookie || ''}/KIOSK_Headroom`,
             parentNode: document.querySelector('#jaas-container'),
             dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
-            jwt: jitsi_jwt_token,
+            jwt: configOverwrite.jwt,
             configOverwrite
         });
         let messageOrder = 0;

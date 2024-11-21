@@ -85,6 +85,8 @@ const { title } = Astro.props;
         interface Window {
             suggestProducts: Function;
             _log: Function;
+            setParticipantOrder: Function;
+            jitsi: any;
         }
     }
     window.suggestProducts = async (words) => {
@@ -106,6 +108,30 @@ const { title } = Astro.props;
         return products;
     };
     window._log = (msg) => console.log(msg);
+
+    window.setParticipantOrder = (participantOrder) => {
+        let participants = window.jitsi.getParticipantsInfo();
+        participants.forEach((p) => {
+            if (p.role === 'moderator') {
+                window.jitsi.executeCommand('pinParticipant', p.id);
+            }
+        });
+        // set order
+        participants.forEach((p) => {
+            let order = participantOrder.indexOf(p.id);
+            if (order >= 0 && p.role !== 'moderator') {
+                // set displayName to order in the form of First, Next, 3rd, 4th, etc.
+                window.jitsi.executeCommand('setDisplayName', { displayName: `${order + 1}${['st', 'nd', 'rd'][order] || 'th'}` });
+            }
+        });
+        // set volume to .5 if not the first 3 including moderators
+        participants.forEach((p) => {
+            let order = participantOrder.indexOf(p.id);
+            if (order >= 3 && p.role !== 'moderator') {
+                window.jitsi.executeCommand('setParticipantVolume', { participantId: p.id, volume: 0.5 });
+            }
+        });
+    };
 </script>
 <style>
     #jaas-container {

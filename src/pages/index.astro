@@ -82,9 +82,10 @@ const Jitsi = {
     },
     Self: {
         domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
-        roomName: 'KIOSK_Headroom'
+        roomName: 'KIOSK_Headroom',
+        jwt: null
     }
-}.Jaas;
+}.Self;
 ---
 
 <Layout title="KIOSK: Headroom">
@@ -116,7 +117,7 @@ const Jitsi = {
             roomName: `${Jitsi.magicCookie || ''}/KIOSK_Headroom`,
             parentNode: document.querySelector('#jaas-container'),
             dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
-            jwt: jitsi_jwt_token,
+            jwt: configOverwrite.jwt,
             configOverwrite
         });
         let messageCounter = 0;
@@ -141,16 +142,44 @@ const Jitsi = {
                     case 'log':
                         console.log('got log:', res.groups.args, e.message);
                         break;
+                    case 'setParticipantOrder':
+                        let participantOrder = res.groups.args.split(',');
+                        console.log('got setorder:', res.groups.args, e.message);
+                        setParticipantOrder(participantOrder);
+
+                        // // pin moderators
+                        // let participants = jitsi.getParticipantsInfo();
+                        // participants.forEach((p) => {
+                        //     if (p.role === 'moderator') {
+                        //         jitsi.executeCommand('pinParticipant', p.id);
+                        //     }
+                        // });
+                        // // set order
+                        // participants.forEach((p) => {
+                        //     let order = participantOrder.indexOf(p.id);
+                        //     if (order >= 0 && p.role !== 'moderator') {
+                        //         // set displayName to order in the form of First, Next, 3rd, 4th, etc.
+                        //         jitsi.executeCommand('setDisplayName', { displayName: `${order + 1}${['st', 'nd', 'rd'][order] || 'th'}` });
+                        //     }
+                        // });
+                        // // set volume to .5 if not the first 3 including moderators
+                        // participants.forEach((p) => {
+                        //     let order = participantOrder.indexOf(p.id);
+                        //     if (order >= 3 && p.role !== 'moderator') {
+                        //         jitsi.executeCommand('setParticipantVolume', { participantId: p.id, volume: 0.5 });
+                        //     }
+                        // });
+                        break;
                 }
             }
         };
 
         jitsi.addListener('incomingMessage', handleMessage);
 
-        jitsi.addListener('participantRoleChanged', async (e) => {
-            window.ismoderator = e.role === 'moderator';
-            Alpine.store('moderator', window.ismoderator);
-        });
+        // jitsi.addListener('participantRoleChanged', async (e) => {
+        //     window.ismoderator = e.role === 'moderator';
+        //     Alpine.store('moderator', window.ismoderator);
+        // });
     });
     let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
 </script>
