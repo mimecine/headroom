@@ -70,7 +70,8 @@ const configOverwrite = {
     apiLogLevels: ['error'],
     toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
     prejoinPageEnabled: false,
-    disabledNotifications: ['notify.chatMessages']
+    disabledNotifications: ['notify.chatMessages'],
+    BRAND_WATERMARK_LINK: 'https://kioskkiosk.com'
 };
 const Jitsi = {
     Jaas: {
@@ -118,7 +119,12 @@ const Jitsi = {
             parentNode: document.querySelector('#jaas-container'),
             dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
             jwt: configOverwrite.jwt,
-            configOverwrite
+            configOverwrite,
+            interfaceConfigOverwrite: {
+                APP_NAME: 'KIOSK',
+                DEFAULT_LOGO_URL: 'https://headroom.kioskkiosk.com/KIOSK-Logo.png',
+                DEFAULT_REMOTE_DISPLAY_NAME: 'Patient Zero'
+            }
         });
         let messageCounter = 0;
         handleMessage = async (e) => {
@@ -183,37 +189,37 @@ const Jitsi = {
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
         });
-        jitsi.addListener('participantJoined', async (e) => {
-            console.log('participantJoined', e, jitsi._participants[e.id].displayName);
-            // let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
-            participants.push({ id: e.id, name: jitsi._participants[e.id].displayName, order: participantCounter++ });
-            participants.sort((a, b) => b.order - a.order);
-            for (let i = 0; i < 4; i++) {
-                jitsi.executeCommand('pinParticipant', participants.at(i).id);
-                console.log('pinning', participants.at(i).id, participants.at(i).name);
-            }
-            for (let i = 4; i < participants.length; i++) {
-                jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
-                console.log('muting', participants.at(i).id, participants.at(i).name);
-            }
-            for (let i = 0; i < participants.length; i++) {
-                jitsi.executeCommand('displayName', `# ${i + 1}`);
-                console.log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
-            }
-        });
-        jitsi.addListener('participantLeft', async (e) => {
-            console.log('participantLeft', e);
-            participants = participants.filter((p) => p.id !== e.id);
-            for (let i = 0; i < 4; i++) {
-                jitsi.executeCommand('pinParticipant', participants.at(i).id);
-            }
-            for (let i = 4; i < participants.length; i++) {
-                jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
-            }
-            for (let i = 0; i < participants.length; i++) {
-                jitsi.executeCommand('displayName', `# ${i + 1}`);
-            }
-        });
+        // jitsi.addListener('participantJoined', async (e) => {
+        //     console.log('participantJoined', e, jitsi._participants[e.id].displayName);
+        //     // let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
+        //     participants.push({ id: e.id, name: jitsi._participants[e.id].displayName, order: participantCounter++ });
+        //     participants.sort((a, b) => b.order - a.order);
+        //     for (let i = 0; i < 4; i++) {
+        //         jitsi.executeCommand('pinParticipant', participants.at(i).id);
+        //         console.log('pinning', participants.at(i).id, participants.at(i).name);
+        //     }
+        //     for (let i = 4; i < participants.length; i++) {
+        //         jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
+        //         console.log('muting', participants.at(i).id, participants.at(i).name);
+        //     }
+        //     for (let i = 0; i < participants.length; i++) {
+        //         jitsi.executeCommand('displayName', `# ${i + 1}`);
+        //         console.log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
+        //     }
+        // });
+        // jitsi.addListener('participantLeft', async (e) => {
+        //     console.log('participantLeft', e);
+        //     participants = participants.filter((p) => p.id !== e.id);
+        //     for (let i = 0; i < 4; i++) {
+        //         jitsi.executeCommand('pinParticipant', participants.at(i).id);
+        //     }
+        //     for (let i = 4; i < participants.length; i++) {
+        //         jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
+        //     }
+        //     for (let i = 0; i < participants.length; i++) {
+        //         jitsi.executeCommand('displayName', `# ${i + 1}`);
+        //     }
+        // });
     });
     let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
     let participants = [];
