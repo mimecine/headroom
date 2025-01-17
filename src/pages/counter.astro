@@ -1,0 +1,185 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ShoppingCart from '../components/ShoppingCart.astro';
+import ShoppingCartButton from '../components/ShoppingCartButton.astro';
+import ProductList from '../components/ProductList.astro';
+import ProductDialog from '../components/ProductDialog.astro';
+
+import { getStore } from '@netlify/blobs';
+import uuid from 'uuid-random';
+import jsonwebtoken from 'jsonwebtoken';
+
+export const prerender = false;
+
+const SHP_ARCHIVE_TOKEN = '6b98671c3560340427f4a1baeaf7ef69';
+const SHP_SHOP_TOKEN = '7766fe447c722c1317e528bdc92f1f2d';
+
+const generate = (privateKey, { id, name, email, avatar, appId, kid, moderator }) => {
+    const now = new Date();
+    const jwt = jsonwebtoken.sign(
+        {
+            aud: 'jitsi',
+            context: {
+                user: {
+                    id,
+                    name,
+                    avatar,
+                    email: email,
+                    moderator: moderator ? 'true' : 'false'
+                },
+                features: {
+                    livestreaming: 'true',
+                    recording: 'true',
+                    transcription: 'true',
+                    'outbound-call': 'true'
+                }
+            },
+            iss: 'chat',
+            room: '*',
+            sub: appId,
+            exp: Math.round(now.setHours(now.getHours() + 3) / 1000),
+            nbf: Math.round(new Date().getTime() / 1000) - 10
+        },
+        privateKey,
+        { algorithm: 'RS256', header: { kid } }
+    );
+    return jwt;
+};
+const sweet_names = ['Darling', 'Hunny', 'Love', 'Pretty', 'Precious', 'Sweetie', 'Handsome', 'Hugball', 'Twinkles'];
+const store = getStore({ name: 'clients', consistency: 'strong' });
+const counter = parseInt(await store.get('counter')) || 0;
+//const random_name = sweet_names[counter % sweet_names.length];
+const random_name = 'HELLO';
+await store.set('counter', counter + 1);
+const jitsi_jwt_token = generate(
+    `-----BEGIN PRIVATE KEY-----${process.env.JITSI_API_SECRET.replace(/-----[\w\s]+-----/g, '')
+        .split(/\s/)
+        .join('\n')}-----END PRIVATE KEY-----`,
+    {
+        id: uuid(),
+        name: random_name,
+        email: 'kiosk@kioskkiosk.com',
+        xavatar: 'my avatar url',
+        appId: process.env.JITSI_API_APPID, // Your AppID ( previously tenant )
+        kid: process.env.JITSI_API_KEY,
+        moderator: false
+    }
+);
+
+const configOverwrite = {
+    apiLogLevels: ['error'],
+    toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
+    prejoinPageEnabled: false,
+    disabledNotifications: ['notify.chatMessages']
+};
+const Jitsi = {
+    Jaas: {
+        domain: '8x8.vc',
+        magicCookie: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574',
+        roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
+        dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+        jwt: jitsi_jwt_token
+    },
+    Self: {
+        domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
+        roomName: 'KIOSK_Headroom',
+        jwt: null
+    }
+}.Self;
+---
+
+<Layout title="KIOSK: Headroom">
+    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen text-xs border-black flex grow">
+        <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
+            <div id="jaas-container" class="h-full"></div>
+        </main>
+
+        <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
+            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
+                <ProductDialog />
+                <ProductList />
+            </section>
+            <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
+                <ShoppingCartButton
+                    >[CART<span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
+                    ></span>]</ShoppingCartButton
+                >
+                <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
+            </section>
+        </aside>
+    </div>
+    <ShoppingCart />
+</Layout>
+<script async src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}></script>
+<script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
+    window.addEventListener('load', () => {
+        window.jitsi = new JitsiMeetExternalAPI(Jitsi.domain, {
+            roomName: `${Jitsi.magicCookie || ''}/KIOSK_Headroom`,
+            parentNode: document.querySelector('#jaas-container'),
+            dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+            jwt: configOverwrite.jwt,
+            configOverwrite
+        });
+        let messageCounter = 0;
+        handleMessage = async (e) => {
+            const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)? (?<args>.*)');
+            const res = re.exec(e.message || e.subject);
+            console.log('match:', res, e.message, re);
+            if (res != null) {
+                switch (res.groups.cmd) {
+                    case 'addproduct':
+                        let order = res.groups.order;
+                        console.log('got addproduct:', res.groups.args, order);
+                        let product = await suggestProducts(res.groups.args);
+                        if (product.length > 0) {
+                            product.at(0).order = order;
+                            Alpine.store('products').unshift(product.at(0));
+                            Alpine.store('products', distinct(Alpine.store('products'), 'id'));
+
+                            Alpine.store('products').sort((a, b) => b.order - a.order);
+                        }
+                        break;
+                    case 'log':
+                        console.log('got log:', res.groups.args, e.message);
+                        break;
+                    case 'setParticipantOrder':
+                        let participantOrder = res.groups.args.split(',');
+                        console.log('got setorder:', res.groups.args, e.message);
+                        setParticipantOrder(participantOrder);
+
+                        // // pin moderators
+                        // let participants = jitsi.getParticipantsInfo();
+                        // participants.forEach((p) => {
+                        //     if (p.role === 'moderator') {
+                        //         jitsi.executeCommand('pinParticipant', p.id);
+                        //     }
+                        // });
+                        // // set order
+                        // participants.forEach((p) => {
+                        //     let order = participantOrder.indexOf(p.id);
+                        //     if (order >= 0 && p.role !== 'moderator') {
+                        //         // set displayName to order in the form of First, Next, 3rd, 4th, etc.
+                        //         jitsi.executeCommand('setDisplayName', { displayName: `${order + 1}${['st', 'nd', 'rd'][order] || 'th'}` });
+                        //     }
+                        // });
+                        // // set volume to .5 if not the first 3 including moderators
+                        // participants.forEach((p) => {
+                        //     let order = participantOrder.indexOf(p.id);
+                        //     if (order >= 3 && p.role !== 'moderator') {
+                        //         jitsi.executeCommand('setParticipantVolume', { participantId: p.id, volume: 0.5 });
+                        //     }
+                        // });
+                        break;
+                }
+            }
+        };
+
+        jitsi.addListener('incomingMessage', handleMessage);
+
+        // jitsi.addListener('participantRoleChanged', async (e) => {
+        //     window.ismoderator = e.role === 'moderator';
+        //     Alpine.store('moderator', window.ismoderator);
+        // });
+    });
+    let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
+</script>

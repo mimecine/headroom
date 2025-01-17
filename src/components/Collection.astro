@@ -3,6 +3,7 @@ import type { HTMLAttributes } from 'astro/types';
 
 interface Props extends HTMLAttributes<'div'> {
     handle: string;
+    modview: string;
 }
 
 const { handle } = Astro.props;
@@ -10,7 +11,7 @@ const { handle } = Astro.props;
 
 <div x-data={`getCollection('${handle}')`} {...Astro.props}>
     <h3 class="text-xl" x-text="title"></h3>
-    <div x-html="descriptionHtml" class="text-sm py-2"></div>
+    <div x-show="mod" x-html="descriptionHtml" class="text-sm py-2"></div>
     <ul x-data="{cart:Alpine.store('globalCart')}" class="divide-y-2 divide-current">
         <template x-for="product in products" :key="product.id">
             <li class="py-2">

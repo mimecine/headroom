@@ -3,15 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import ShoppingCart from '../components/ShoppingCart.astro';
 import ShoppingCartButton from '../components/ShoppingCartButton.astro';
 import Collection from '../components/Collection.astro';
+import ModCollection from '../components/ModCollection.astro';
 ---
 
 <Layout title="Plain w Component">
     <ShoppingCart />
     <ShoppingCartButton />
-    <div x-data class="font-mono xtext-xs">
-        <Collection handle="things" class="border border-current bg-pink-800 text-blue-300 w-1/2 p-4" />
-    </div>
-    <div x-data class="font-mono xtext-xs">
-        <Collection handle="topos" class="border border-current bg-pink-800 text-blue-300 w-1/2 p-4" />
+    <div class="grid grid-flow-row grid-cols-2 gap-4 place-items-center">
+        <Collection handle="things" class="border border-current bg-pink-800 text-blue-300 xw-1/2 p-4" />
+        <ModCollection handle="tiny-uk" class="border border-current bg-pink-800 text-blue-300 xw-1/2 p-4" />
     </div>
 </Layout>

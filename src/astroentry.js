@@ -39,9 +39,11 @@ const getCollection = async (handle) => {
 export default (Alpine) => {
     Alpine.plugin(persist);
     Alpine.plugin(component);
-    Alpine.data('getCollection', (handle = 'things') => ({
+    Alpine.data('getCollection', (handle = 'things', mod = 'true') => ({
         products: [],
         title: '',
+        mod: mod?.toLowerCase() === 'true',
+        handle: handle,
         descriptionHtml: '',
         async init() {
             let { products, title, descriptionHtml } = await getCollection(handle);
@@ -68,6 +70,7 @@ export default (Alpine) => {
         },
         async createCart() {
             await (async () => {
+                console.log('creating cart');
                 const { data, errors, extensions } = await client.request(cartCreate, {
                     variables: {
                         input: { lines: [] }
@@ -84,10 +87,14 @@ export default (Alpine) => {
                 localStorage.setItem('checkoutUrl', this.checkoutUrl);
                 return this.cartId;
             })();
+            await this.fetchCart();
         },
         async fetchCart() {
+            console.log('fetching cart');
             this.cartId = localStorage.getItem('cartId');
+            console.log('cartId', this.cartId);
             this.checkoutUrl = localStorage.getItem('checkoutUrl');
+            console.log('checkoutUrl', this.checkoutUrl);
             if (!this.cartId || !this.checkoutUrl) {
                 await this.createCart();
             }
@@ -103,6 +110,9 @@ export default (Alpine) => {
                 if (errors) {
                     console.log('ERR:Get: ', errors);
                     return false;
+                }
+                if (!data.cart) {
+                    await this.createCart();
                 }
                 this.cartId = data.cart.id;
                 this.checkoutUrl = data.cart.checkoutUrl;

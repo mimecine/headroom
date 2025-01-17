@@ -1,0 +1,56 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'div'> {
+    handle: string;
+}
+
+const { handle } = Astro.props;
+---
+
+<div x-data={`getCollection('${handle}')`} {...Astro.props}>
+    <h3 class="text-xs" x-text="title"></h3>
+    <ul class="divide-y-2 divide-current">
+        <template x-for="product in products" :key="product.id">
+            <li class="py-2">
+                <h3 x-text="product.title" class="" @click="await handleMessage({e:product.title})"></h3>
+                <!-- <ul class="flex flex-row flex-wrap">
+                    <template x-for="variant in product.variants" :key="variant.id">
+                        <li class="p-1">
+                            <button
+                                class="border border-current p-1 text-xs disabled:opacity-50 bg-opacity-20 bg-black"
+                                x-text="variant.title == 'Default Title'? 'Get': `Get ${variant.title}`"
+                                :disabled="variant.availableForSale == false"
+                                @click="console.log('adding:',await cart.addItem(variant.id));"></button>
+                        </li>
+                    </template>
+                </ul> -->
+            </li>
+        </template>
+    </ul>
+</div>
+
+<script>
+    const handleMessage = async (e) => {
+        const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+        const res = re.exec(e.message || e.subject);
+        console.log('match:', res);
+
+        if (res != null) {
+            switch (res.groups.cmd) {
+                case 's':
+                    let products = await suggestProducts(res.groups.args);
+                    if (products.length > 0) {
+                        console.log('Found', products);
+                        Alpine.store('products').unshift(products.at(0));
+                        Alpine.store('products', distinct(Alpine.store('products'), 'id'));
+                        Alpine.store('products').at(0).order ??= messageOrder++;
+                        Alpine.store('products').sort((a, b) => b.order - a.order);
+                        jitsi.executeCommand('sendChatMessage', `/addproduct :${messageOrder++} ${products.at(0).title}`, '', false); //send to listeners
+                    }
+                case 'log':
+                    console.log('got log:', res.groups.args, e.message, e);
+            }
+        }
+    };
+</script>
