@@ -6,7 +6,7 @@ interface Props extends HTMLAttributes<'div'> {
 const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
 ---
 
-<div x-data="{toggle(){Alpine.store('globalCart').toggle()}}" {...Astro.props}>
+<div x-cloak x-data="{toggle(){Alpine.store('globalCart').toggle()}}" {...Astro.props}>
     <div
         class="absolute inset-0 w-40 p-2 bg-red-200 border-r border-black text-red-900 grid grid-flow-row grid-rows-[auto,1fr,auto]"
         x-show="Alpine.store('globalCart').open"
