@@ -8,12 +8,12 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
 
 <div x-cloak x-data="{toggle(){Alpine.store('globalCart').toggle()}}" {...Astro.props}>
     <div
-        class="absolute inset-0 w-40 p-2 bg-red-200 border-r border-black text-red-900 grid grid-flow-row grid-rows-[auto,1fr,auto]"
+        class="absolute inset-0 w-32 md:w-40 p-2 bg-red-200 border-r border-black text-red-900 grid grid-flow-row grid-rows-[auto,1fr,auto]"
         x-show="Alpine.store('globalCart').open"
     >
         <div class="w-full text-right">
             <button @click="toggle()" class="pb-2 text-black hover:text-red-500" x-ref="openbutton">
-                <svg class="h-6 w-6 text-right" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-8 w-8 text-right" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
@@ -30,8 +30,6 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
                             :alt="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"
                             :title="`${line.merchandise.product.title} ( ${line.merchandise.title} ) `"
                         />
-                        <!-- <h3 class="text-xs text-[0.6rem]" x-show="line.merchandise.title!='Default Title'" x-text="`${line.merchandise.title}`"></h3>
-                        <h3 class="text-xs text-[0.6rem]" x-show="line.merchandise.title=='Default Title'" x-text="`${line.merchandise.product.title}`"></h3> -->
                         <button
                             x-data="{waiting:false}"
                             :class="{'opacity-50 rotate-45':waiting}"

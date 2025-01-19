@@ -59,8 +59,8 @@ const jitsi_jwt_token = generate(
         id: uuid(),
         name: random_name,
         email: 'kiosk@kioskkiosk.com',
-        xavatar: 'my avatar url',
-        appId: process.env.JITSI_API_APPID, // Your AppID ( previously tenant )
+        avatar: 'my avatar url',
+        appId: process.env.JITSI_API_APPID,
         kid: process.env.JITSI_API_KEY,
         moderator: false
     }
@@ -71,22 +71,39 @@ const configOverwrite = {
     toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
     prejoinPageEnabled: false,
     disabledNotifications: ['notify.chatMessages'],
-    BRAND_WATERMARK_LINK: 'https://kioskkiosk.com'
+    BRAND_WATERMARK_LINK: 'https://kioskkiosk.com',
+    interfaceConfigOverwrite: {
+        APP_NAME: 'KIOSK',
+        DEFAULT_BACKGROUND: '#FFBBBB',
+        LANG_DETECTION: false,
+        //MOBILE_APP_PROMO: true,
+        //SHOW_BRAND_WATERMARK: false,
+        DEFAULT_LOGO_URL: 'https://headroom.kioskkiosk.com/images/KIOSK-Logo.png',
+        DEFAULT_REMOTE_DISPLAY_NAME: 'Patient Zero',
+        BRAND_WATERMARK_LINK: 'https://kioskkiosk.com',
+        SHOW_JITSI_WATERMARK: false,
+        HIDE_DEEP_LINKING_LOGO: true,
+        SHOW_POWERED_BY: false,
+        SHOW_DEEP_LINKING_IMAGE: false,
+        SHOW_BRAND_WATERMARK: false
+    }
 };
 const Jitsi = {
     Jaas: {
         domain: '8x8.vc',
         magicCookie: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574',
         roomName: 'vpaas-magic-cookie-c94a3fb2bf864a889957b91b85fd6574/KIOSK_Headroom',
-        dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+        //dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
+        lang: 'en',
         jwt: jitsi_jwt_token
     },
     Self: {
         domain: 'jitsi-headroom-1-u25913.vm.elestio.app/',
         roomName: 'KIOSK_Headroom',
+        lang: 'en',
         jwt: null
     }
-}.Self;
+}.Jaas;
 ---
 
 <Layout title="KIOSK: Headroom">
