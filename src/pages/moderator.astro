@@ -78,7 +78,7 @@ const Jitsi = {
         roomName: 'KIOSK_Headroom',
         jwt: null
     }
-}.Jaas;
+}.Self;
 ---
 
 <Layout title="Headroom Moderator">
@@ -104,6 +104,9 @@ const Jitsi = {
     <ShoppingCart />
 </Layout>
 <script async src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}></script>
+<script define:vars={{ _message: 'Hello' }}>
+    window._message = _message;
+</script>
 <script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
     window.addEventListener('load', () => {
         window.jitsi = new JitsiMeetExternalAPI(Jitsi.domain, {
@@ -117,22 +120,24 @@ const Jitsi = {
         handleMessage = async (e) => {
             const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
             const res = re.exec(e.message || e.subject);
-            console.log('match:', res);
+            _log('match:', res);
 
             if (res != null) {
                 switch (res.groups.cmd) {
                     case 's':
                         let products = await suggestProducts(res.groups.args);
                         if (products.length > 0) {
-                            console.log('Found', products);
-                            Alpine.store('products').unshift(products.at(0));
-                            Alpine.store('products', distinct(Alpine.store('products'), 'id'));
-                            Alpine.store('products').at(0).order ??= messageOrder++;
-                            Alpine.store('products').sort((a, b) => b.order - a.order);
+                            _log('Found', products);
+                            let local_products = Alpine.store('products');
+                            local_products.unshift(products.at(0));
+                            local_products = distinct(Alpine.store('products'), 'id');
+                            local_products.at(0).order ??= messageOrder++;
+                            local_products = local_products.sort((a, b) => b.order - a.order);
+                            Alpine.store('products', local_products);
                             jitsi.executeCommand('sendChatMessage', `/addproduct :${messageOrder++} ${products.at(0).title}`, '', false); //send to listeners
                         }
                     case 'log':
-                        console.log('got log:', res.groups.args, e.message, e);
+                        _log('got log:', res.groups.args, e.message, e);
                 }
             }
         };
@@ -146,25 +151,25 @@ const Jitsi = {
             Alpine.store('moderator', window.ismoderator);
         });
         // jitsi.addListener('participantJoined', async (e) => {
-        //     console.log('participantJoined', e, jitsi._participants[e.id].displayName);
+        //     _log('participantJoined', e, jitsi._participants[e.id].displayName);
         //     // let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
         //     participants.push({ id: e.id, name: jitsi._participants[e.id].displayName, order: participantCounter++ });
         //     participants.sort((a, b) => b.order - a.order);
         //     for (let i = 0; i < 4; i++) {
         //         jitsi.executeCommand('pinParticipant', participants.at(i).id);
-        //         console.log('pinning', participants.at(i).id, participants.at(i).name);
+        //         _log('pinning', participants.at(i).id, participants.at(i).name);
         //     }
         //     for (let i = 4; i < participants.length; i++) {
         //         jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
-        //         console.log('muting', participants.at(i).id, participants.at(i).name);
+        //         _log('muting', participants.at(i).id, participants.at(i).name);
         //     }
         //     for (let i = 0; i < participants.length; i++) {
         //         jitsi.executeCommand('displayName', `# ${i + 1}`);
-        //         console.log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
+        //         _log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
         //     }
         // });
         // jitsi.addListener('participantLeft', async (e) => {
-        //     console.log('participantLeft', e);
+        //     _log('participantLeft', e);
         //     participants = participants.filter((p) => p.id !== e.id);
         //     for (let i = 0; i < 4; i++) {
         //         jitsi.executeCommand('pinParticipant', participants.at(i).id);

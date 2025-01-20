@@ -28,6 +28,17 @@ const { title, classList } = Astro.props;
     </body>
 </html>
 <script>
+    //window.console.log = (...args) => console.log('KIOSK:', args);
+    var __log = console.log;
+    window.console.log = function () {
+        var args = Array.from(arguments); // ES5
+        args.unshift('XLOG : ');
+
+        __log.apply(window.console, args);
+    };
+    window._log = console.log;
+</script>
+<script>
     import { createStorefrontApiClient } from '@shopify/storefront-api-client';
 
     const gql = String.raw;
@@ -108,7 +119,6 @@ const { title, classList } = Astro.props;
         });
         return products;
     };
-    window._log = (msg) => console.log(msg);
 
     window.setParticipantOrder = (participantOrder) => {
         let participants = window.jitsi.getParticipantsInfo();
