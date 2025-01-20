@@ -6,8 +6,8 @@
 # a path:
 /branding.json
     # headers for that path:
-    Access-Control-Allow-Origin: ALLOW
+    Access-Control-Allow-Origin: *
 # another path:
 /images/*
     # headers for that path:
-    Access-Control-Allow-Origin: ALLOW
+    Access-Control-Allow-Origin: *
