@@ -82,24 +82,29 @@ const Jitsi = {
 ---
 
 <Layout title="Headroom Moderator">
-    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen font-mono text-xs border-black flex grow">
-        <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
-            <div id="jaas-container" class="h-full"></div>
-        </main>
+    <div class="grid h-screen grid-rows-[1fr,auto]">
+        <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-full font-mono text-xs border-black flex grow">
+            <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
+                <div id="jaas-container" class="h-full"></div>
+            </main>
 
-        <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
-            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
-                <ProductDialog />
-                <ProductList />
-            </section>
-            <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
-                <ShoppingCartButton
-                    >[CART<span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
-                    ></span>]</ShoppingCartButton
-                >
-                <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
-            </section>
-        </aside>
+            <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
+                <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
+                    <ProductDialog />
+                    <ProductList />
+                </section>
+                <section class="bg-green-300 h-20 lg:h-40 border-t border-black place-content-center grid text-xs lg:text-lg">
+                    <ShoppingCartButton
+                        >[CART<span x-show="Alpine.store('globalCart').lines.length" x-text="`(${Alpine.store('globalCart').totalQuantity})`"
+                        ></span>]</ShoppingCartButton
+                    >
+                    <div x-show="Alpine.store('moderator')" class="text-center">MOD</div>
+                </section>
+            </aside>
+        </div>
+        <div class="bg-red-100 min-h-16 text-black text-lg grid place-items-center" x-data>
+            <div class="text-xl">PRODUCT: <input type="text" @keyup.enter="handleMessage({message:'/s '+$el.value});$el.value=''" /></div>
+        </div>
     </div>
     <ShoppingCart />
 </Layout>
@@ -114,7 +119,18 @@ const Jitsi = {
             parentNode: document.querySelector('#jaas-container'),
             dynamicBrandingUrl: 'https://headroom.netlify.app/branding.json',
             jwt: configOverwrite.jwt,
-            configOverwrite
+            configOverwrite,
+            interfaceConfigOverwrite: {
+                APP_NAME: 'KIOSK',
+                DEFAULT_LOGO_URL: 'https://headroom.kioskkiosk.com/images/KIOSK-Logo.png',
+                DEFAULT_REMOTE_DISPLAY_NAME: ' ❤️ ',
+                BRAND_WATERMARK_LINK: 'https://kioskkiosk.com',
+                SHOW_JITSI_WATERMARK: false,
+                HIDE_DEEP_LINKING_LOGO: true,
+                SHOW_POWERED_BY: false,
+                SHOW_DEEP_LINKING_IMAGE: false,
+                SHOW_BRAND_WATERMARK: false
+            }
         });
         let messageOrder = 0;
         handleMessage = async (e) => {
