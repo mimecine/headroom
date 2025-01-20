@@ -8,6 +8,7 @@ import ProductDialog from '../components/ProductDialog.astro';
 import { getStore } from '@netlify/blobs';
 import uuid from 'uuid-random';
 import jsonwebtoken from 'jsonwebtoken';
+import { userInfo } from 'os';
 
 export const prerender = false;
 
@@ -71,6 +72,10 @@ const configOverwrite = {
     toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
     prejoinPageEnabled: false,
     disabledNotifications: ['notify.chatMessages'],
+    userInfo: {
+        email: '',
+        displayName: random_name
+    },
     BRAND_WATERMARK_LINK: 'https://kioskkiosk.com',
     interfaceConfigOverwrite: {
         APP_NAME: 'KIOSK',
