@@ -163,19 +163,27 @@ const Jitsi = {
                 switch (res.groups.cmd) {
                     case 'addproduct':
                         let order = res.groups.order;
-                        console.log('got addproduct:', res.groups.args, order);
+                        //                        console.log('got addproduct:', res.groups.args, order);
                         let product = await suggestProducts(res.groups.args);
                         if (product.length > 0) {
-                            product.at(0).order = order.replace(/:/, '');
-                            Alpine.store('products').unshift(product.at(0));
-                            console.log('added product:', order, product.at(0));
-                            Alpine.store('products', distinct(Alpine.store('products'), 'id'));
+                            let local_products = Alpine.store('products');
+                            local_products = local_products.filter((p) => p.id !== product.at(0).id);
+                            local_products.unshift(product.at(0));
+                            local_products = local_products.sort((a, b) => b.order.localeCompare(a.order));
+                            Alpine.store('products', local_products);
 
-                            Alpine.store(
-                                'products',
-                                Alpine.store('products').sort((a, b) => b.order.localeCompare(a.order))
-                            );
-                            console.log('sorted products:', Alpine.store('products'));
+                            console.log('added product:', order, product.at(0));
+
+                            // product.at(0).order = order.replace(/:/, '');
+                            // Alpine.store('products').unshift(product.at(0));
+                            // console.log('added product:', order, product.at(0));
+                            // Alpine.store('products', distinct(Alpine.store('products'), 'id'));
+
+                            // Alpine.store(
+                            //     'products',
+                            //     Alpine.store('products').sort((a, b) => b.order.localeCompare(a.order))
+                            // );
+                            // console.log('sorted products:', Alpine.store('products'));
                         }
                         break;
                     case 'log':
