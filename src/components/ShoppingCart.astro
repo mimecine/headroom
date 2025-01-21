@@ -12,7 +12,7 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
         x-show="Alpine.store('globalCart').open"
     >
         <div class="w-full text-right">
-            <button @click="toggle()" class="pb-2 text-black hover:text-red-500" x-ref="openbutton">
+            <button @click="toggle()" class="pb-2 hover:text-red-500" x-ref="openbutton">
                 <svg class="h-8 w-8 text-right" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -49,13 +49,14 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
             <div x-show="Alpine.store('globalCart').lines.length == 0" class="h-full text-center grid items-center text-red-500">HEY, IS EMPTY!</div>
         </div>
         <div class="text-right text-sm md:text-neutral" x-show="Alpine.store('globalCart').lines.length">
-            ----------------<br />
+            - - - - - - <br />
             <p>
-                Total-ish: <span
+                So far:<span
+                    class="font-bold"
                     x-text="Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD',trailingZeroDisplay:'stripIfInteger' }).format(Alpine.store('globalCart').cost)"
                 ></span>
             </p>
-            <p>Tax & Ship: LATER</p>
+            <p>+ Tax & Ship</p>
             <a :href="Alpine.store('globalCart').checkoutUrl" target="_cart"><button class="py-1 font-bold mt-8"> &gt; CHECKOUT</button></a>
         </div>
     </div>
