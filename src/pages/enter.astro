@@ -180,9 +180,15 @@ const Jitsi = {
                         console.log('got log:', res.groups.args, e.message);
                         break;
                     case 'shift':
-                        console.log('got shift:', res.groups.args, e.message);
+                        let local_products2 = Alpine.store('products').filter((p) => true);
+                        local_products2.shift();
+                        Alpine.store('products', local_products2);
 
                         //Alpine.store('products', Alpine.store('products').shift());
+                        break;
+                    case 'queuenumber':
+                        _log('queuenumber', e, res);
+                        jitsi.executeCommand('displayName', numberToOrdinal(parseInt(res.groups.args)));
                         break;
                     case 'setParticipantOrder':
                         let participantOrder = res.groups.args.split(',');
@@ -261,4 +267,9 @@ const Jitsi = {
     let participants = [];
     let moderators = [];
     let participantCounter = 0;
+    function numberToOrdinal(n) {
+        const s = ['th', 'st', 'nd', 'rd'],
+            v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
 </script>

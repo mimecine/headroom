@@ -133,25 +133,32 @@ const Jitsi = {
         handleMessage = async (e) => {
             const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)?\\s?(?<args>.*)?');
             const res = re.exec(e.message || e.subject);
+            let cmd = res.groups.cmd;
+            let order = res.groups.order;
+            let args = res.groups.args;
+            if (args == '...') {
+                cmd = '...';
+            }
+
             _log('match:', res);
 
             if (res != null) {
-                switch (res.groups.cmd) {
+                switch (cmd) {
                     case 's':
-                        let products = await suggestProducts(res.groups.args);
+                        let products = await suggestProducts(args);
                         if (products.length > 0) {
                             let product = products.at(0);
                             _log('Found', products);
                             products.at(0).order ??= messageOrder++;
                             let local_products = Alpine.store('products');
-                            _log('Products 1:', local_products);
+                            _log('Products 1:', local_products, local_products.unshift, typeof local_products);
                             local_products = local_products.filter((p) => p.id !== product.id);
                             _log('Products 2:', local_products);
                             local_products.unshift(product);
                             _log('Products 3:', local_products);
                             local_products = distinct(Alpine.store('products'), 'id');
                             _log('Products 4:', local_products);
-                            local_products = local_products.sort((a, b) => b.order?.localeCompare(a.order));
+                            local_products = local_products.sort((a, b) => b.order - a.order);
                             _log('Products 5:', local_products);
 
                             Alpine.store('products', local_products);
@@ -160,25 +167,24 @@ const Jitsi = {
                         }
                         break;
                     case 'addproduct':
-                        let order = res.groups.order;
-                        console.log('got addproduct:', res.groups.args, order);
-                        let products2 = await suggestProducts(res.groups.args);
+                        _log('add product:', args, order);
+                        let products2 = await suggestProducts(args);
                         if (products2.length > 0) {
                             products2.at(0).order = order.replace(/:/, '');
                             let local_products = Alpine.store('products');
                             local_products = local_products.filter((p) => p.id !== products2.at(0).id);
                             local_products.unshift(products2.at(0));
-                            local_products = local_products.sort((a, b) => b.order?.localeCompare(a.order));
+                            local_products = local_products.sort((a, b) => b.order - a.order);
                             Alpine.store('products', local_products);
 
                             console.log('added product:', order, products2.at(0));
                         }
                         break;
-                    case 'd':
-                        let local_products2 = Alpine.store('products');
-                        _log('Products before delete:', local_products2.shift, typeof local_products2);
-                        // Alpine.store('products', local_products2.shift);
-                        //jitsi.executeCommand('sendChatMessage', `/shift`, '', false); //send to listeners
+                    case '...':
+                        let local_products2 = Alpine.store('products').filter((p) => true);
+                        local_products2.shift();
+                        Alpine.store('products', local_products2);
+                        jitsi.executeCommand('sendChatMessage', `/shift`, '', false); //send to listeners
                         break;
 
                     case 'log':
@@ -196,40 +202,43 @@ const Jitsi = {
             window.ismoderator = e.role === 'moderator';
             Alpine.store('moderator', window.ismoderator);
         });
-        // jitsi.addListener('participantJoined', async (e) => {
-        //     _log('participantJoined', e, jitsi._participants[e.id].displayName);
-        //     // let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
-        //     participants.push({ id: e.id, name: jitsi._participants[e.id].displayName, order: participantCounter++ });
-        //     participants.sort((a, b) => b.order - a.order);
-        //     for (let i = 0; i < 4; i++) {
-        //         jitsi.executeCommand('pinParticipant', participants.at(i).id);
-        //         _log('pinning', participants.at(i).id, participants.at(i).name);
-        //     }
-        //     for (let i = 4; i < participants.length; i++) {
-        //         jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
-        //         _log('muting', participants.at(i).id, participants.at(i).name);
-        //     }
-        //     for (let i = 0; i < participants.length; i++) {
-        //         jitsi.executeCommand('displayName', `# ${i + 1}`);
-        //         _log('setting name', participants.at(i).id, participants.at(i).name, `# ${i + 1}`);
-        //     }
-        // });
-        // jitsi.addListener('participantLeft', async (e) => {
-        //     _log('participantLeft', e);
-        //     participants = participants.filter((p) => p.id !== e.id);
-        //     for (let i = 0; i < 4; i++) {
-        //         jitsi.executeCommand('pinParticipant', participants.at(i).id);
-        //     }
-        //     for (let i = 4; i < participants.length; i++) {
-        //         jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
-        //     }
-        //     for (let i = 0; i < participants.length; i++) {
-        //         jitsi.executeCommand('displayName', `# ${i + 1}`);
-        //     }
-        // });
+        jitsi.addListener('participantJoined', async (e) => {
+            _log('participantJoined', e, jitsi._participants[e.id].displayName);
+            //let _p = jitsi.getParticipantsInfo().map((e) => ({ id: e.id, name: jitsi._participants[e.id].displayName }));
+            participants.push({ id: e.id, name: jitsi._participants[e.id].formattedDisplayName, order: participantCounter++ });
+            // participants.sort((a, b) => b.order - a.order);
+            // for (let i = 0; i < 4; i++) {
+            //     jitsi.executeCommand('pinParticipant', participants.at(i).id);
+            //     _log('pinning', participants.at(i).id, participants.at(i).name);
+            // }
+            // for (let i = 4; i < participants.length; i++) {
+            //     jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
+            //     _log('muting', participants.at(i).id, participants.at(i).name);
+            // }
+            for (let i = 0; i < participants.length; i++) {
+                // jitsi.executeCommand('displayName', `#${participants.at(i).name}:${i + 1}`.trim());
+                // _log('setting name', participants.at(i), participants.at(i).id, participants.at(i).name, `Should be # ${i + 1} ${participants.at(i).name}`);
+                jitsi.executeCommand('sendChatMessage', `/queuenumber ${i + 1}`, participants.at(i).id, false); //send to listeners
+
+                // _log(jitsi._participants[participants.at(i).id]);
+            }
+        });
+        jitsi.addListener('participantLeft', async (e) => {
+            _log('participantLeft', e);
+            participants = participants.filter((p) => p.id !== e.id);
+            for (let i = 0; i < participants.length; i++) {
+                jitsi.executeCommand('sendChatMessage', `/queuenumber ${i + 1}`, participants.at(i).id, false); //send to listeners
+            }
+            // for (let i = 0; i < 4; i++) {
+            //     jitsi.executeCommand('pinParticipant', participants.at(i).id);
+            // }
+            // for (let i = 4; i < participants.length; i++) {
+            //     jitsi.executeCommand('setParticipantVolume', participants.at(i).id, 0.5);
+            // }
+        });
     });
     let distinct = (array, key) => [...new Map(array.map((item) => [item[key], item])).values()];
-    let participants = [];
+    window.participants = [];
     let moderators = [];
     let participantCounter = 0;
 </script>
