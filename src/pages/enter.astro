@@ -156,41 +156,33 @@ const Jitsi = {
         });
         let messageCounter = 0;
         handleMessage = async (e) => {
-            const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)? (?<args>.*)?');
+            const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)?\\s?(?<args>.*)?');
             const res = re.exec(e.message || e.subject);
             console.log('match:', res, e.message, re);
             if (res != null) {
                 switch (res.groups.cmd) {
                     case 'addproduct':
                         let order = res.groups.order;
-                        //                        console.log('got addproduct:', res.groups.args, order);
-                        let product = await suggestProducts(res.groups.args);
-                        if (product.length > 0) {
+                        console.log('got addproduct:', res.groups.args, order);
+                        let products = await suggestProducts(res.groups.args);
+                        if (products.length > 0) {
+                            products.at(0).order = order.replace(/:/, '');
                             let local_products = Alpine.store('products');
-                            local_products = local_products.filter((p) => p.id !== product.at(0).id);
-                            local_products.unshift(product.at(0));
-                            local_products = local_products.sort((a, b) => b.order.localeCompare(a.order));
+                            local_products = local_products.filter((p) => p.id !== products.at(0).id);
+                            local_products.unshift(products.at(0));
+                            local_products = local_products.sort((a, b) => b.order?.localeCompare(a.order));
                             Alpine.store('products', local_products);
 
-                            console.log('added product:', order, product.at(0));
-
-                            // product.at(0).order = order.replace(/:/, '');
-                            // Alpine.store('products').unshift(product.at(0));
-                            // console.log('added product:', order, product.at(0));
-                            // Alpine.store('products', distinct(Alpine.store('products'), 'id'));
-
-                            // Alpine.store(
-                            //     'products',
-                            //     Alpine.store('products').sort((a, b) => b.order.localeCompare(a.order))
-                            // );
-                            // console.log('sorted products:', Alpine.store('products'));
+                            console.log('added product:', order, products.at(0));
                         }
                         break;
                     case 'log':
                         console.log('got log:', res.groups.args, e.message);
                         break;
-                    case 'pop':
-                        console.log('got pop:', res.groups.args, e.message);
+                    case 'shift':
+                        console.log('got shift:', res.groups.args, e.message);
+
+                        //Alpine.store('products', Alpine.store('products').shift());
                         break;
                     case 'setParticipantOrder':
                         let participantOrder = res.groups.args.split(',');

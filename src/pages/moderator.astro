@@ -109,9 +109,6 @@ const Jitsi = {
     <ShoppingCart />
 </Layout>
 <script async src={`https://${[Jitsi.domain, Jitsi.magicCookie || '', 'external_api.js'].join('/')}`}></script>
-<script define:vars={{ _message: 'Hello' }}>
-    window._message = _message;
-</script>
 <script define:vars={{ jitsi_jwt_token, configOverwrite, Jitsi }}>
     window.addEventListener('load', () => {
         window.jitsi = new JitsiMeetExternalAPI(Jitsi.domain, {
@@ -134,7 +131,7 @@ const Jitsi = {
         });
         let messageOrder = 0;
         handleMessage = async (e) => {
-            const re = new RegExp('/(?<cmd>[a-z]+) (?<args>.*)');
+            const re = new RegExp('/(?<cmd>[a-z]+)\\s?(?<order>:\\d+)?\\s?(?<args>.*)?');
             const res = re.exec(e.message || e.subject);
             _log('match:', res);
 
@@ -143,18 +140,50 @@ const Jitsi = {
                     case 's':
                         let products = await suggestProducts(res.groups.args);
                         if (products.length > 0) {
+                            let product = products.at(0);
                             _log('Found', products);
+                            products.at(0).order ??= messageOrder++;
                             let local_products = Alpine.store('products');
-                            local_products = local_products.filter((p) => p.id !== products.at(0).id);
-                            local_products.unshift(products.at(0));
+                            _log('Products 1:', local_products);
+                            local_products = local_products.filter((p) => p.id !== product.id);
+                            _log('Products 2:', local_products);
+                            local_products.unshift(product);
+                            _log('Products 3:', local_products);
                             local_products = distinct(Alpine.store('products'), 'id');
-                            local_products.at(0).order ??= messageOrder++;
-                            local_products = local_products.sort((a, b) => b.order - a.order);
+                            _log('Products 4:', local_products);
+                            local_products = local_products.sort((a, b) => b.order?.localeCompare(a.order));
+                            _log('Products 5:', local_products);
+
                             Alpine.store('products', local_products);
+                            _log('Products:', local_products);
                             jitsi.executeCommand('sendChatMessage', `/addproduct :${messageOrder} ${products.at(0).title}`, '', false); //send to listeners
                         }
+                        break;
+                    case 'addproduct':
+                        let order = res.groups.order;
+                        console.log('got addproduct:', res.groups.args, order);
+                        let products2 = await suggestProducts(res.groups.args);
+                        if (products2.length > 0) {
+                            products2.at(0).order = order.replace(/:/, '');
+                            let local_products = Alpine.store('products');
+                            local_products = local_products.filter((p) => p.id !== products2.at(0).id);
+                            local_products.unshift(products2.at(0));
+                            local_products = local_products.sort((a, b) => b.order?.localeCompare(a.order));
+                            Alpine.store('products', local_products);
+
+                            console.log('added product:', order, products2.at(0));
+                        }
+                        break;
+                    case 'd':
+                        let local_products2 = Alpine.store('products');
+                        _log('Products before delete:', local_products2.shift, typeof local_products2);
+                        // Alpine.store('products', local_products2.shift);
+                        //jitsi.executeCommand('sendChatMessage', `/shift`, '', false); //send to listeners
+                        break;
+
                     case 'log':
                         _log('got log:', res.groups.args, e.message, e);
+                        break;
                 }
             }
         };

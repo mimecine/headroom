@@ -107,14 +107,14 @@ const { title, classList } = Astro.props;
         data?.search?.edges.map((p) => {
             p.node.from = 'shop';
             p.node.active = true;
-            console.log('shop', p.node.title);
+            console.log('on shop:', p.node.title);
             products.push(p.node);
         });
         var { data } = await shp.archive.request(productSearchQuery, { variables: { query: `title:${words}`, first: 5 } });
         data?.search?.edges.map((p) => {
             p.node.from = 'archive';
             p.node.active = false;
-            console.log('archive', p.node.title);
+            console.log('on archive:', p.node.title);
             products.push(p.node);
         });
         return products;

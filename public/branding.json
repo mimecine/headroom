@@ -1,10 +1,10 @@
 {
     "logoClickUrl": "https://kioskkiosk.com",
-    "logoImageUrl": "https://headroom.kioskkiosk.com/images/KIOSK-Logo.png",
-    "backgroundColor": "#f00",
+    "logoImageUrl": "https://headroom.kioskkiosk.com/images/logo-color.svg",
+    "backgroundColor": "#00f4ff",
     "customTheme": {
         "palette": {
-            "ui01": "orange !important",
+            "ui01": "#f9a8d4 !important",
             "ui02": "maroon",
             "surface02": "darkgreen",
             "ui03": "violet",
