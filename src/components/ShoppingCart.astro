@@ -19,9 +19,9 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
             </button>
         </div>
         <div>
-            <div class="gap-2 grid grid-cols-2">
+            <div class="gap-2 grid md:grid-cols-2">
                 <template x-for="line in Alpine.store('globalCart').lines" :key="line.id">
-                    <div class="text-right text-xs" x-data="{quantity:line.quantity}">
+                    <div class="text-center text-xs" x-data="{quantity:line.quantity}">
                         <img
                             class="w-full border border-current"
                             :src="line.merchandise.image.url"
@@ -48,7 +48,7 @@ const { openLabel = 'Open Cart', closeLabel = 'Close Cart' } = Astro.props;
             </div>
             <div x-show="Alpine.store('globalCart').lines.length == 0" class="h-full text-center grid items-center text-red-500">HEY, IS EMPTY!</div>
         </div>
-        <div class="text-right text-sm md:text-neutral" x-show="Alpine.store('globalCart').lines.length">
+        <div class="text-center text-xs md:text-base" x-show="Alpine.store('globalCart').lines.length">
             - - - - - - <br />
             <p>
                 So far:<span

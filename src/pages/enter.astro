@@ -112,13 +112,13 @@ const Jitsi = {
 ---
 
 <Layout title="KIOSK: Headroom">
-    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-screen text-xs border-black flex grow">
+    <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-svh text-xs border-black xflex xgrow overflow-hidden">
         <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
-            <div id="jaas-container" class="h-full"></div>
+            <div id="jaas-container" class="h-svh"></div>
         </main>
 
         <aside class="w-20 lg:w-40 grid grid-flow-row grid-rows-[1fr,auto] bg-pink-300">
-            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]" class="relative">
+            <section x-data="{activeProduct:null}" class="overflow-scroll max-h-[calc(100vh-10rem)]">
                 <ProductDialog />
                 <ProductList />
             </section>
