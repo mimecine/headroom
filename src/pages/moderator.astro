@@ -63,7 +63,10 @@ const configOverwrite = {
     apiLogLevels: ['error'],
     // toolbarButtons: ['microphone', 'camera', 'hangup', 'tileview'],
     prejoinPageEnabled: false,
-    disabledNotifications: ['notify.chatMessages']
+    disabledNotifications: ['notify.chatMessages'],
+    virtualBackgrounds: ['kbg1.jpg', 'kbg2.jpg' /*'kbg3.jpg', 'kbg4.jpg', 'kbg5.jpg', 'kbg6.jpg', 'kbg7.jpg', 'kbg8.jpg', 'kbg9.jpg', 'kbg10.jpg'*/].map(
+        (im) => `https://headroom.kioskkiosk.com/images/${im}`
+    )
 };
 const Jitsi = {
     Jaas: {
@@ -139,7 +142,7 @@ const Jitsi = {
             if (args == '...') {
                 cmd = '...';
             }
-            
+
             if (res != null) {
                 switch (cmd) {
                     case 's':
