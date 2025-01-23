@@ -20,7 +20,6 @@
         "@netlify/blobs": "^8.1.0",
         "@netlify/functions": "^3.0.0",
         "@shopify/storefront-api-client": "^1.0.3",
-        "@tailwindcss/vite": "^4.0.0",
         "@types/alpinejs": "^3.13.11",
         "@types/jsonwebtoken": "^9.0.7",
         "@types/react": "^18.3.18",
@@ -35,7 +34,6 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "shopify-storefront-client": "^1.2.0",
-        "tailwindcss": "^4.0.0",
         "unique-names-generator": "^4.7.1",
         "uuid-random": "^1.3.2"
     },
