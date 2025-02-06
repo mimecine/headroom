@@ -1,8 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
 import ShoppingCart from '../components/ShoppingCart.astro';
 import ShoppingCartButton from '../components/ShoppingCartButton.astro';
 import Collection from '../components/Collection.astro';
+import HeroImage from '../assets/images/Screenshot.png';
 ---
 
 <Layout title="KIOSK: Headroom">
@@ -18,6 +20,9 @@ import Collection from '../components/Collection.astro';
                 Welcome to KIOSK Headroom, a place to recreate the physical space of KIOSK. We have missed you. Come talk to us and others about KIOSK, the
                 weather, what you ate last night, etc. Free-form and flowing conversation just like the old days in the shop. This week's hours, Feb 4-8th: 11-1
                 pm New York time. <a href="/enter" class="underline">Come in and say hello! </a>
+            </div>
+            <div class="!p-0 border-0">
+                <Image src={HeroImage} alt="KIOSK Headroom" class="w-full" />
             </div>
             <div class="bg-green-200">
                 Needless to say, this is a work in progress, a beta experience. Stuff will break. Be sure to turn on your camera so we can see you and you can
