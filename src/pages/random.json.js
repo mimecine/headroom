@@ -1,4 +1,5 @@
 export const prerender = false;
+import { getStore } from '@netlify/blobs';
 
 export async function GET() {
     let number = Math.random();
@@ -12,7 +13,8 @@ export async function GET() {
     return new Response(
         JSON.stringify({
             number,
-            message: `Here's a random number: ${isOpen}`
+            message: `Here's a random number: ${isOpen}`,
+            cwd: process.cwd()
         })
     );
 }
