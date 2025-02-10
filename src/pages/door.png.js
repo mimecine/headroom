@@ -12,5 +12,5 @@ export async function GET({ params, request, redirect }) {
     let file = await fs.readFile(`./public/images/${isOpen ? 'open' : 'closed'}.png`);
     // return new Response(file, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=0, must-revalidate' } });
     // return new Response('Hello');
-    return Response.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
+    return Response.redirect(`https://headroom.kioskkiosk.com/images/${isOpen ? 'open' : 'closed'}.png`);
 }
