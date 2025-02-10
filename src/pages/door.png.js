@@ -12,5 +12,5 @@ export async function GET({ params, request, redirect }) {
     let file = await fs.readFile(`./public/images/${isOpen ? 'open' : 'closed'}.png`);
     // return new Response(file, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=0, must-revalidate' } });
     // return new Response('Hello');
-    redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
+    return Response.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
 }
