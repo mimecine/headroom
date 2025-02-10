@@ -1,4 +1,4 @@
-const prerender = false;
+export const prerender = false;
 
 import { getStore } from '@netlify/blobs';
 const store = getStore({

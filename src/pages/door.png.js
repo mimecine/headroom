@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import { getStore } from '@netlify/blobs';
-const prerender = false;
+export const prerender = false;
 
 export async function GET({ params, request }) {
     const store = getStore({
