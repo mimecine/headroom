@@ -1,12 +1,12 @@
+import { getStore } from '@netlify/blobs';
 export const prerender = false;
 
-import { getStore } from '@netlify/blobs';
 const store = getStore({
     name: 'door',
     consistency: 'strong'
 });
 export async function GET({ params, request }) {
+    let wasOpen = await store.get('open');
     await store.set('open', new Date(Date.now() + 1000 * 20).toISOString());
-    console.log(new Date(Date.now() + 1000 * 20).toISOString());
-    return new Response(JSON.stringify(await store.get('open')));
+    return new Response(JSON.stringify({ open: await store.get('open'), wasOpen }));
 }

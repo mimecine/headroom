@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import { getStore } from '@netlify/blobs';
 export const prerender = false;
 
-export async function GET({ params, request }) {
+export async function GET({ params, request, redirect }) {
     const store = getStore({
         name: 'door',
         consistency: 'strong'
@@ -13,5 +13,5 @@ export async function GET({ params, request }) {
     // return Response.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
     console.log('open', isOpen);
     console.log('expireTime', expireTime, `/images/${isOpen ? 'open' : 'closed'}.png`);
-    return new Response(file);
+    return redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
 }
