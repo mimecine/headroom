@@ -14,6 +14,5 @@ export default defineConfig({
         }),
         alpinejs({ entrypoint: '/src/astroentry.js' })
     ],
-    output: 'static',
     adapter: netlify()
 });
