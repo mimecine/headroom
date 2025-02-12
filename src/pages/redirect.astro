@@ -13,8 +13,6 @@ await tstore.set('test', new Date().toISOString());
 
 let check2 = await tstore.get('test');
 
-return Astro.redirect('/images/closed.png');
-console.log;
 export const prerender = false;
 ---
 
