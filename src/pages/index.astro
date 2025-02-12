@@ -26,8 +26,14 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 weather, what you ate last night, etc. Free-form and flowing conversation just like the old days in the shop. This week's hours, Feb 4-8th: 11-1
                 pm New York time. Or with luck, one of is in anyway. <a href="/enter" class="underline">Come in and say hello! </a>
             </div>
-            <div class="!p-0 border-0">
-                <Image src={HeroImage} alt="KIOSK Headroom" class="w-full" />
+            <div class="!p-0 border-0 bg-red-200">
+                <Image
+                    src={HeroImage}
+                    alt="KIOSK Headroom"
+                    class="w-full"
+                    widths={[300, 600, 900]}
+                    sizes={`(max-width: 360px) 300px, (max-width: 720px) 600px, 900px`}
+                />
             </div>
             <div class="bg-green-200">
                 Needless to say, this is a work in progress, a beta experience. Stuff will break. Be sure to turn on your camera so we can see you and you can
