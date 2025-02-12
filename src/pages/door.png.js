@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { Astro } from 'astro';
 import { getStore } from '@netlify/blobs';
 export const prerender = false;
 
@@ -13,4 +14,5 @@ export async function GET({ params, request, redirect }) {
     // return new Response(file, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=0, must-revalidate' } });
     // return new Response('Hello');
     return Response.redirect(`https://headroom.kioskkiosk.com/images/${isOpen ? 'open' : 'closed'}.png`);
+    // return Astro.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
 }

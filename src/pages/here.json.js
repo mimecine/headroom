@@ -8,5 +8,6 @@ const store = getStore({
 export async function GET({ params, request }) {
     let wasOpen = await store.get('open');
     await store.set('open', new Date(Date.now() + 1000 * 20).toISOString());
+    console.log({ open: await store.get('open'), wasOpen });
     return new Response(JSON.stringify({ open: await store.get('open'), wasOpen }));
 }
