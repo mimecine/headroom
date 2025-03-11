@@ -4,16 +4,10 @@ import netlifyBlobsDriver from 'unstorage/drivers/netlify-blobs';
 
 export const prerender = false;
 
-// const store = getStore({
-//     name: 'door',
-//     consistency: 'strong'
-// });
 const storage = createStorage({
     driver: netlifyBlobsDriver({
-        name: 'door'
-        // url: 'https://blobs.netlify.com/v1',
-        // token: process.env.NETLIFY_BLOBS_TOKEN,
-        // prefix: 'door'
+        name: 'door',
+        consistency: 'strong'
     })
 });
 
