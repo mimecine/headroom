@@ -1,16 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
-import { getStore } from '@netlify/blobs';
+// import { getStore } from '@netlify/blobs';
+import { createStorage } from 'unstorage';
+import netlifyBlobsDriver from 'unstorage/drivers/netlify-blobs';
+
 import HeroImage from '../assets/images/headroom-screen.png';
 
 export const prerender = false;
 
-const store = getStore({
-    name: 'door',
-    consistency: 'strong'
+// const store = getStore({
+//     name: 'door',
+//     consistency: 'strong'
+// });
+const storage = createStorage({
+    driver: netlifyBlobsDriver({
+        name: 'door'
+    })
 });
-let expireTime = new Date(await store.get('open')).getTime();
+// const store = getStore({
+
+// let expireTime = new Date(await store.get('open')).getTime();
+let openTime = Date.parse((await storage.getItem('open')) + '');
+
+let expireTime = openTime ? new Date(openTime).getTime() : 0;
 let isOpen = expireTime > Date.now();
+console.log(typeof openTime);
+console.log({ openTime, expireTime, isOpen });
 return Astro.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
 ---
