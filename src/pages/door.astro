@@ -12,7 +12,6 @@ const storage = createStorage({
 });
 
 let openTime = Date.parse((await storage.getItem('open')) + '');
-
 let expireTime = openTime ? new Date(openTime).getTime() : 0;
 let isOpen = expireTime > Date.now();
 return Astro.redirect(`/images/${isOpen ? 'open' : 'closed'}.png`);
