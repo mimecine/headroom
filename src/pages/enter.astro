@@ -8,7 +8,6 @@ import ProductDialog from '../components/ProductDialog.astro';
 import { getStore } from '@netlify/blobs';
 import uuid from 'uuid-random';
 import jsonwebtoken from 'jsonwebtoken';
-import { userInfo } from 'os';
 
 export const prerender = false;
 
@@ -111,7 +110,7 @@ const Jitsi = {
 }.Self;
 ---
 
-<Layout title="KIOSK: Headroom">
+<Layout title="KIOSK: Headroom" classList="">
     <div class="grid grid-cols-[1fr,auto] grid-flow-col w-full h-svh text-xs border-black xflex xgrow overflow-hidden">
         <main class="bg-cyan-400 border-r border-black grid text-3xl font-bold font-sans">
             <div id="jaas-container" class="h-svh"></div>
