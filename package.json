@@ -28,6 +28,7 @@
         "alpinejs-component": "^1.2.10",
         "astro": "^5.4.3",
         "blobshape": "^1.0.0",
+        "dayjs": "^1.11.13",
         "jsonwebtoken": "^9.0.2",
         "marked": "^15.0.7",
         "marked-shiki": "^1.2.0",

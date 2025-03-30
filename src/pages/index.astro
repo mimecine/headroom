@@ -7,6 +7,16 @@ import HeroImage from '../assets/images/headroom-screen.png';
 <Layout title="KIOSK: Headroom" classList="">
     <meta slot="head" name="description" content="KIOSK: Headroom" />
     <meta slot="head" name="xdescription" content="KIOSK: Headroom" />
+    <script slot="head" src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script slot="head" src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
+    <script slot="head" src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.js"></script>
+    <script slot="head" src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/timezone.js"></script>
+    <script>
+        dayjs.extend(window.dayjs_plugin_relativeTime);
+        dayjs.extend(window.dayjs_plugin_utc);
+        dayjs.extend(window.dayjs_plugin_timezone);
+        dayjs.tz.setDefault('America/New_York');
+    </script>
 
     <header class="w-screen text-white text-6xl p-4 font-bold font-sans"><a href="https://kioskkiosk.com" class="no-underline not-italic">KIOSK</a></header>
     <div class="grid place-items-center items-center text-green-800 font-mono max-w-[900px] m-auto">
@@ -47,8 +57,14 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 <button class="w-1/2 xh-1/2 border-8 bg-yellow-200 border-double xp-8 m-auto tracking-widest font-bold"><a href="/enter">JOIN US</a></button>
             </div> -->
 
-            <div class="bg-yellow-200 text-[white] text-center font-bold text-2xl">
-                WE WERE HERE SUNDAY MARCH 30TH 5-7pm EST / 4-6 CST / 2-4pm PST<br />SEE YOU NEXT TIME!
+            <div class="bg-[red] text-[white] text-center text-2xl">
+                WE WERE HERE
+                <br />
+                <span class="italic">MARCH 30TH 5-7pm EST / 4-6pm CST / 2-4pm PST</span>
+                <br />
+                SEE YOU NEXT TIME, WHICH WILL BE
+                <br />
+                <span class="italic">THURSDAY APRIL 3RD 5-7pm EST / 4-6pm CST / 2-4pm PST</span>
             </div>
 
             <div class="bg-green-200">
