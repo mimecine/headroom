@@ -19,7 +19,7 @@ const { title, classList } = Astro.props;
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <slot name="head" />
     </head>
-    <body class="antialiased text-white bg-blue-300 font-mono h-full" x-data>
+    <body class="antialiased text-white bg-blue-300 font-mono h-vh" x-data>
         <div class="flex flex-col xpx-6 bg-blue-300">
             <div class="flex flex-col w-full mx-auto grow">
                 <main class={classList}><slot /></main>
