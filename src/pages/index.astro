@@ -13,8 +13,10 @@ import HeroImage from '../assets/images/headroom-screen.png';
         <div class="h-full text-lg font-mono *:p-8 w-full max-w-192 m-auto *:my-4 p-4 *:border">
             <div class="bg-orange-200">
                 Welcome to KIOSK Headroom, a place to recreate the physical space of KIOSK. We have missed you. Come talk to us and others about KIOSK, the
-                weather, what you ate last night, etc. Free-form and flowing conversation just like the old days in the shop. When it's green we are open. When
-                it's red we are closed. We are not always here, but we will be as much as possible. If you see us, please say hello.
+                weather, what you ate last night, etc. Free-form and flowing conversation just like the old days in the shop.
+                <!-- When it's green we are open. When
+                it's red we are closed.  -->
+                We are not always here, but we will be as much as possible. If you catch us, please say hello.
             </div>
             <!-- <div class="!p-0 border-0 bg-red-200">
                 <Image
@@ -36,13 +38,13 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 >
             </div> -->
             <div
-                class="text-4xl bg-red-200 hover:bg-red-300 text-center !p-0 text-green-200"
+                class="text-4xl h-20 grid place-items-center bg-red-200 hover:bg-red-300 text-center !p-0 text-orange-200"
                 x-data="{status:{}}"
                 x-init="setInterval(async ()=>{status = await (await fetch(`/is-here.json?v=${Date.now()}`)).json()}, 1000)"
                 xx-show="status.isOpen"
                 x-cloak
             >
-                <button class="w-full h-full border-24 border-double p-8 tracking-widest font-bold"><a href="/enter">ENTER</a></button>
+                <button class="w-1/2 xh-1/2 border-8 bg-yellow-200 border-double xp-8 m-auto tracking-widest font-bold"><a href="/enter">ENTER</a></button>
             </div>
             <div class="bg-green-200">
                 Needless to say, this is a work in progress, a beta experience. Stuff will break. Be sure to turn on your camera so we can see you and you can
