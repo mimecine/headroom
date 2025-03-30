@@ -37,15 +37,18 @@ import HeroImage from '../assets/images/headroom-screen.png';
                     /></a
                 >
             </div> -->
-            <div
-                class="text-4xl h-20 grid place-items-center bg-red-200 hover:bg-red-300 text-center !p-0 text-orange-200"
+            <!-- <div
+                class="text-4xl h-20 grid place-items-center bg-[red] hover:bg-red-300 text-center !p-0 text-green-400"
                 x-data="{status:{}}"
                 x-init="setInterval(async ()=>{status = await (await fetch(`/is-here.json?v=${Date.now()}`)).json()}, 1000)"
                 xx-show="status.isOpen"
                 x-cloak
             >
                 <button class="w-1/2 xh-1/2 border-8 bg-yellow-200 border-double xp-8 m-auto tracking-widest font-bold"><a href="/enter">ENTER</a></button>
-            </div>
+            </div> -->
+
+            <div class="bg-yellow-200">WE'LL BE HERE TODAY 5-7pm EST / 4-6 CST / 2-4pm PST</div>
+
             <div class="bg-green-200">
                 Needless to say, this is a work in progress, a beta experience. Stuff will break. Be sure to turn on your camera so we can see you and you can
                 see us. Why is a good question. The answer is simple, we miss the shop and talking to all of you.
@@ -55,7 +58,7 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 running we plan to have regular hours, just like the New York store.
             </div>
 
-            <div class="bg-yellow-200">
+            <div class="bg-orange-200">
                 Don't want to talk? Just want to shop? <a href="https://kioskkiosk.com" class="underline not-italic hover:italic">Go to the usual place</a> and browse
                 the collection. We'll be here when you you are ready.
             </div>
