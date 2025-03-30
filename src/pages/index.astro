@@ -39,7 +39,7 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 class="text-4xl bg-red-200 hover:bg-red-300 text-center !p-0 text-green-200"
                 x-data="{status:{}}"
                 x-init="setInterval(async ()=>{status = await (await fetch(`/is-here.json?v=${Date.now()}`)).json()}, 1000)"
-                x-show="status.isOpen"
+                xx-show="status.isOpen"
                 x-cloak
             >
                 <button class="w-full h-full border-24 border-double p-8 tracking-widest font-bold"><a href="/enter">ENTER</a></button>
