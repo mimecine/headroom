@@ -16,7 +16,7 @@ import HeroImage from '../assets/images/headroom-screen.png';
                 weather, what you ate last night, etc. Free-form and flowing conversation just like the old days in the shop. When it's green we are open. When
                 it's red we are closed. We are not always here, but we will be as much as possible. If you see us, please say hello.
             </div>
-            <div class="!p-0 border-0 bg-red-200">
+            <!-- <div class="!p-0 border-0 bg-red-200">
                 <Image
                     src={HeroImage}
                     alt="KIOSK Headroom"
@@ -24,7 +24,7 @@ import HeroImage from '../assets/images/headroom-screen.png';
                     widths={[300, 600, 900]}
                     sizes={`(max-width: 360px) 300px, (max-width: 720px) 600px, 900px`}
                 />
-            </div>
+            </div> -->
             <div class="bg-yellow-200 text-yellow-50 text-3xl text-center">
                 <a href="/"
                     ><img
@@ -38,7 +38,7 @@ import HeroImage from '../assets/images/headroom-screen.png';
             <div
                 class="text-4xl bg-red-200 hover:bg-red-300 text-center !p-0 text-green-200"
                 x-data="{status:{}}"
-                x-init="setInterval(async ()=>{status = await (await fetch('/is-here.json')).json()}, 1000)"
+                x-init="setInterval(async ()=>{status = await (await fetch(`/is-here.json?v=${Date.now()}`)).json()}, 1000)"
                 x-show="status.isOpen"
                 x-cloak
             >

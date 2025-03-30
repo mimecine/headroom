@@ -5,8 +5,8 @@ export const prerender = false;
 
 const storage = createStorage({
     driver: netlifyBlobsDriver({
-        name: 'door',
-        consistency: 'strong'
+        name: 'door'
+        // consistency: 'strong'
     })
 });
 
