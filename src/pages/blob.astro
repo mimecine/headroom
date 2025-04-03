@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="KIOSK: Blob" classList="">
+    <div class="bg-yellow-200 text-yellow-50 text-3xl text-center">
+        <a href="/"
+            ><img
+                src="/door"
+                alt="Are we in?"
+                class="w-36 inline"
+                onload="clearTimeout(window.door);window.door=setTimeout(()=>{this.src = `/door?t=${Date.now()}`},1000)"
+            /></a
+        >
+    </div>
+    <div
+        class="text-4xl h-20 grid place-items-center bg-[red] hover:bg-red-300 text-center !p-0 text-green-400"
+        x-data="{status:{}}"
+        x-init="setInterval(async ()=>{status = await (await fetch(`/is-here.json?v=${Date.now()}`)).json()}, 1000)"
+        x-show="status.isOpen"
+        x-cloak
+    >
+        <button class="w-1/2 xh-1/2 border-8 bg-yellow-200 border-double xp-8 m-auto tracking-widest font-bold"><a href="/enter">JOIN US</a></button>
+    </div>
+</Layout>
